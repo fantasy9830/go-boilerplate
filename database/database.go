@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/fantasy9830/go-boilerplate/config"
-
 	"github.com/jinzhu/gorm"
 	// _ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"

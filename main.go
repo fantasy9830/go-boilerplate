@@ -3,7 +3,6 @@ package main
 import (
 	// "github.com/fantasy9830/go-boilerplate/database/migrations"
 	"github.com/fantasy9830/go-boilerplate/routers"
-
 	"github.com/gin-gonic/gin"
 )
 

@@ -3,7 +3,6 @@ package migrations
 import (
 	"github.com/fantasy9830/go-boilerplate/database"
 	"github.com/fantasy9830/go-boilerplate/models"
-
 	"github.com/jinzhu/gorm"
 )
 

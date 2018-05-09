@@ -6,7 +6,6 @@ import (
 
 	"github.com/fantasy9830/go-boilerplate/controllers"
 	"github.com/fantasy9830/go-boilerplate/middlewares"
-
 	"github.com/gin-gonic/gin"
 )
 

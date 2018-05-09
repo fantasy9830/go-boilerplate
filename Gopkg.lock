@@ -2,6 +2,19 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/fantasy9830/go-boilerplate"
+  packages = [
+    "config",
+    "controllers",
+    "database",
+    "middlewares",
+    "models",
+    "routers"
+  ]
+  revision = "21e2007aad0fc07b3e7fcc8ba6ca2cdc175c300d"
+
+[[projects]]
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
   revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
@@ -165,6 +178,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "60ae96d9e988c9f5b093e112f9cec16fd1e118377c987840104a65847f5048b0"
+  inputs-digest = "1c4189339209a713e8236081e6790d0dd382c0f7930fdc561dc8cb24b363c5ed"
   solver-name = "gps-cdcl"
   solver-version = 1
