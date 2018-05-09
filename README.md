@@ -13,7 +13,7 @@ $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
 
 * [dep](https://github.com/golang/dep)
 ```bash
-$ dep ensure
+$ dep init
 ```
 
 ## Running Migrations
@@ -22,4 +22,7 @@ $ dep ensure
 migrations.Run()
 ```
 
-
+## Usage Example
+```http
+http://localhost:8080/ping
+```
