@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/fantasy9830/go-boilerplatee/config"
+	"github.com/fantasy9830/go-boilerplate/config"
 
 	"github.com/jinzhu/gorm"
 	// _ "github.com/jinzhu/gorm/dialects/mysql"

@@ -1,8 +1,8 @@
 package main
 
 import (
-	// "github.com/fantasy9830/go-boilerplatee/database/migrations"
-	"github.com/fantasy9830/go-boilerplatee/routers"
+	// "github.com/fantasy9830/go-boilerplate/database/migrations"
+	"github.com/fantasy9830/go-boilerplate/routers"
 
 	"github.com/gin-gonic/gin"
 )

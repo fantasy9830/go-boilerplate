@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/fantasy9830/go-boilerplatee/controllers"
-	"github.com/fantasy9830/go-boilerplatee/middlewares"
+	"github.com/fantasy9830/go-boilerplate/controllers"
+	"github.com/fantasy9830/go-boilerplate/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
