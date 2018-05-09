@@ -1,0 +1,9 @@
+# dependencies
+/vendor
+
+# vscode
+.vscode
+
+# misc
+debug
+.DS_Store
