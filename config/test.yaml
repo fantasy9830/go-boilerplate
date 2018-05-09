@@ -1,0 +1,28 @@
+connections:
+  default: postgres
+
+  postgres:
+    driver: postgres
+    host: "127.0.0.1"
+    port: 5432
+    dbname: dbname
+    user: user
+    password: password
+    sslmode: disable
+
+  mysql:
+    driver: mysql
+    host: "127.0.0.1"
+    port: 3306
+    dbname: dbname
+    user: user
+    password: password
+    charset: utf8
+    parseTime: true
+    loc: Local
+
+  sqlite:
+    driver: sqlite
+
+  mssql:
+    driver: mssql
