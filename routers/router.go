@@ -47,4 +47,8 @@ func SetupRouter() {
 	// auth
 	auth := &controllers.AuthController{}
 	router.POST("/signin", auth.SignIn)
+
+	// grpc
+	grpc := &controllers.GrpcController{}
+	router.GET("/grpc", grpc.SayHello)
 }
