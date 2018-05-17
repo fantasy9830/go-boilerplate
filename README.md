@@ -44,9 +44,13 @@ http://localhost:8080/grpc
 可以看到 `Hello your name` 表示成功
 
 ## docker
+```bash
+$ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
+```
+
 build image
 ```bash
-docker build -t go-boilerplate
+docker build -t go-boilerplate .
 ```
 
 run
