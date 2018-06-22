@@ -29,9 +29,11 @@ func GetRouter() *gin.Engine {
 
 // SetupRouter setup router
 func SetupRouter() {
+	// Logger middleware
+	router.Use(gin.Logger())
 
-	// 認證的 Middleware
-	router.Use(middlewares.Auth())
+	// Recovery middleware
+	router.Use(gin.Recovery())
 
 	// 靜態目錄
 	router.Static("/static", "./public")
@@ -39,16 +41,20 @@ func SetupRouter() {
 	// favicon.ico
 	router.StaticFile("/favicon.ico", "./public/favicon.ico")
 
-	// test
-	router.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
-
-	// auth
-	auth := &controllers.AuthController{}
+	// 登入
+	auth := controllers.NewAuthController()
 	router.POST("/signin", auth.SignIn)
 
 	// grpc
 	grpc := &controllers.GrpcController{}
 	router.GET("/grpc", grpc.SayHello)
+
+	// 需認證
+	authorized := router.Group("/")
+	authorized.Use(middlewares.Auth())
+	{
+		authorized.GET("/test", func(c *gin.Context) {
+			c.String(http.StatusOK, "Test")
+		})
+	}
 }

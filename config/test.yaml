@@ -1,3 +1,4 @@
+signingKey: secretKey
 connections:
   default: postgres
 

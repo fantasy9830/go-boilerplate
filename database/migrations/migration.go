@@ -17,7 +17,7 @@ func Run() {
 	db.AutoMigrate(&models.User{})
 }
 
-//Reverse reverse the migrations.
+// Reverse reverse the migrations.
 func Reverse() {
 	db.DropTableIfExists(&models.User{})
 }
