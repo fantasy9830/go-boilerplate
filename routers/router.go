@@ -41,6 +41,10 @@ func SetupRouter() {
 	// favicon.ico
 	router.StaticFile("/favicon.ico", "./public/favicon.ico")
 
+	router.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
+
 	// 登入
 	auth := controllers.NewAuthController()
 	router.POST("/signin", auth.SignIn)
