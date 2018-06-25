@@ -41,7 +41,9 @@ func Auth() gin.HandlerFunc {
 				c.JSON(http.StatusUnauthorized, gin.H{"status": "token is not valid"})
 			}
 		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized access to this resource"})
+			e, _ := err.(*jwt.ValidationError)
+
+			c.JSON(http.StatusUnauthorized, gin.H{"status": e.Error()})
 		}
 	}
 }

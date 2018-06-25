@@ -35,6 +35,9 @@ func SetupRouter() {
 	// Recovery middleware
 	router.Use(gin.Recovery())
 
+	// CORS middleware
+	router.Use(middlewares.Cros())
+
 	// 靜態目錄
 	router.Static("/static", "./public")
 

@@ -54,6 +54,7 @@ func (service *AuthService) GenerateToken(username string) (token string, err er
 			Id:        strconv.Itoa(int(user.ID)),
 			ExpiresAt: time.Now().Add(7 * 24 * time.Hour).Unix(),
 			Issuer:    "Ricky",
+			IssuedAt:  time.Now().Unix(),
 		},
 	}
 
