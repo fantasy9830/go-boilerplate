@@ -12,6 +12,12 @@ type AuthController struct {
 	authService *services.AuthService
 }
 
+// Login 帳號和密碼
+type Login struct {
+	Username string `form:"username" json:"username" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
+}
+
 // NewAuthController constructor
 func NewAuthController() *AuthController {
 	return &AuthController{
@@ -21,26 +27,31 @@ func NewAuthController() *AuthController {
 
 // SignIn sign in
 func (ctrl *AuthController) SignIn(c *gin.Context) {
-	username := c.Query("username")
-	password := c.Query("password")
+	var login Login
+	if err := c.ShouldBindJSON(&login); err == nil {
+		if ctrl.authService.Attempt(login.Username, login.Password) {
 
-	if ctrl.authService.Attempt(username, password) {
+			token, err := ctrl.authService.GenerateToken(login.Username)
+			if err != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"status": "token generation failed",
+					"token":  nil,
+				})
+			}
 
-		token, err := ctrl.authService.GenerateToken(username)
-		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
-				"status": "token generation failed",
+				"status": "you are logged in",
+				"token":  token,
+			})
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"status": "unauthorized",
 				"token":  nil,
 			})
 		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"status": "you are logged in",
-			"token":  token,
-		})
 	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"status": "unauthorized",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": err.Error(),
 			"token":  nil,
 		})
 	}
