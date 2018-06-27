@@ -33,26 +33,26 @@ func (ctrl *AuthController) SignIn(c *gin.Context) {
 
 			token, err := ctrl.authService.GenerateToken(login.Username)
 			if err != nil {
-				c.JSON(http.StatusOK, gin.H{
-					"status": "token generation failed",
-					"token":  nil,
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "token generation failed",
+					"token":   nil,
 				})
 			}
 
 			c.JSON(http.StatusOK, gin.H{
-				"status": "you are logged in",
-				"token":  token,
+				"message": "login successful",
+				"token":   token,
 			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"status": "unauthorized",
-				"token":  nil,
+				"message": "login failed",
+				"token":   nil,
 			})
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": err.Error(),
-			"token":  nil,
+			"message": err.Error(),
+			"token":   nil,
 		})
 	}
 }

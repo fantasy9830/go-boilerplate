@@ -56,6 +56,15 @@ func SetupRouter() {
 	grpc := &controllers.GrpcController{}
 	router.GET("/grpc", grpc.SayHello)
 
+	// migration
+	migrate := &controllers.MigrateController{}
+	router.POST("/migrate/run", migrate.Run)
+	router.DELETE("/migrate/reset", migrate.Reverse)
+
+	// seeder
+	seeder := &controllers.SeederController{}
+	router.POST("/seed/run", seeder.Run)
+
 	// 需認證
 	authorized := router.Group("/")
 	authorized.Use(middlewares.Auth())

@@ -5,29 +5,34 @@
 $ go get -u github.com/fantasy9830/go-boilerplate
 ```
 
+# Start
 ```bash
 $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
 ```
 
-## 套件
-
-* [dep](https://github.com/golang/dep)
 ```bash
-$ dep init
+$ go run main.go
 ```
 
-## Running Migrations
-取消註解
-```go
-migrations.Run()
-```
-
-## Usage Example
+# Running Migrations
+建立table
 ```http
-http://localhost:8080/ping
+POST http://localhost:8080/migrate/run
 ```
 
-## grpc
+# Running Seeds
+建立user假資料
+```http
+POST http://localhost:8080/seed/run
+```
+
+# Rollback all database migrations
+刪除所有migrations
+```http
+DELETE http://localhost:8080/migrate/reset
+```
+
+# grpc
 啟動grpc server
 ```bash
 $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
@@ -37,13 +42,12 @@ $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
 $ go run grpc/main.go
 ```
 
-開啟瀏覽器
 ```http
-http://localhost:8080/grpc
+GET http://localhost:8080/grpc
 ```
 可以看到 `Hello your name` 表示成功
 
-## docker
+# docker
 ```bash
 $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
 ```
@@ -58,8 +62,7 @@ run
 docker run --rm -p 8080:8080 go-boilerplate
 ```
 
-開啟瀏覽器
 ```http
-http://localhost:8080/ping
+GET http://localhost:8080/ping
 ```
 可以看到 `pong` 表示成功

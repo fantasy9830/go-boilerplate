@@ -1,8 +1,6 @@
 package main
 
 import (
-	// "github.com/fantasy9830/go-boilerplate/database/migrations"
-
 	"github.com/fantasy9830/go-boilerplate/routers"
 	"github.com/gin-gonic/gin"
 )
@@ -16,9 +14,6 @@ func main() {
 
 	// setup router
 	routers.SetupRouter()
-
-	// run the migrations
-	// migrations.Run()
 
 	router.Run()
 }

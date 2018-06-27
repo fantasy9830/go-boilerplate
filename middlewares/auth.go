@@ -31,19 +31,25 @@ func Auth() gin.HandlerFunc {
 				claims, err := auth.ParseToken(token.Raw)
 
 				if err != nil {
-					c.JSON(http.StatusUnauthorized, gin.H{"status": "token is not valid"})
+					c.JSON(http.StatusUnauthorized, gin.H{"message": "token is not valid"})
+
+					c.Abort()
 				} else {
 					c.Set("claims", claims)
 
 					c.Next()
 				}
 			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"status": "token is not valid"})
+				c.JSON(http.StatusUnauthorized, gin.H{"message": "token is not valid"})
+
+				c.Abort()
 			}
 		} else {
 			e, _ := err.(*jwt.ValidationError)
 
-			c.JSON(http.StatusUnauthorized, gin.H{"status": e.Error()})
+			c.JSON(http.StatusUnauthorized, gin.H{"message": e.Error()})
+
+			c.Abort()
 		}
 	}
 }
