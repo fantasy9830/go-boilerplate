@@ -22,10 +22,10 @@ func (r *UserRepository) Lookup(username string) *models.User {
 }
 
 // LookupID looks up a user by userid.
-func (r *UserRepository) LookupID(uid uint) *models.User {
+func (r *UserRepository) LookupID(userID uint) *models.User {
 	user := models.User{}
 
-	db.First(&user, uid)
+	db.First(&user, userID)
 
 	return &user
 }

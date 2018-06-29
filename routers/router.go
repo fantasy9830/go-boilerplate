@@ -30,10 +30,10 @@ func GetRouter() *gin.Engine {
 // SetupRouter setup router
 func SetupRouter() {
 	// Logger middleware
-	router.Use(gin.Logger())
+	// router.Use(gin.Logger())
 
 	// Recovery middleware
-	router.Use(gin.Recovery())
+	// router.Use(gin.Recovery())
 
 	// CORS middleware
 	router.Use(middlewares.Cros())

@@ -14,10 +14,10 @@ func init() {
 
 // Run run the migrations.
 func Run() {
-	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.User{}, &models.Role{}, &models.Permission{})
 }
 
 // Reverse reverse the migrations.
 func Reverse() {
-	db.DropTableIfExists(&models.User{})
+	db.DropTableIfExists(&models.User{}, &models.Role{}, &models.Permission{}, "user_roles", "user_permissions", "role_permissions")
 }
