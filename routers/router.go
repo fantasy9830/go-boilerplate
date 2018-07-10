@@ -69,8 +69,7 @@ func SetupRouter() {
 	authorized := router.Group("/")
 	authorized.Use(middlewares.Auth())
 	{
-		authorized.GET("/test", func(c *gin.Context) {
-			c.String(http.StatusOK, "Test")
-		})
+		authorized.GET("/roles/:guardName", auth.Role)
+		authorized.GET("/permissions/:guardName", auth.Permission)
 	}
 }

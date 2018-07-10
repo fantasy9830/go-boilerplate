@@ -80,3 +80,27 @@ func (service *AuthService) ParseToken(token string) (*Claims, error) {
 
 	return nil, err
 }
+
+// GetRoles 取得roles
+func (service *AuthService) GetRoles(userID uint, guardName string) []string {
+	roles := service.userRepository.Roles(userID, guardName)
+
+	var result []string
+	for _, value := range roles {
+		result = append(result, value.Name)
+	}
+
+	return result
+}
+
+// GetPermissions 取得permissions
+func (service *AuthService) GetPermissions(userID uint, guardName string) map[string][]string {
+	permissions := service.userRepository.Permissions(userID, guardName)
+
+	result := make(map[string][]string)
+	for _, value := range permissions {
+		result[value.Action] = append(result[value.Action], value.Name)
+	}
+
+	return result
+}

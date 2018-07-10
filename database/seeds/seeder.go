@@ -52,6 +52,41 @@ func Run() {
 			},
 			Permissions: []models.Permission{
 				permission,
+				models.Permission{
+					ID:          4,
+					Name:        "resource4",
+					Action:      "Read",
+					GuardName:   "Web",
+					DisplayName: "Read Resource4",
+					Description: "permission description...",
+				},
+			},
+		})
+
+		db.Create(&models.User{
+			Name:     "Test2",
+			Username: "test2",
+			Secret:   "8888",
+			Email:    "Test2@gmail.com",
+			Address:  "Test2 Address",
+			Roles: []models.Role{
+				models.Role{
+					Name:        "test",
+					GuardName:   "API",
+					DisplayName: "Test2",
+					Description: "role description...",
+					Permissions: []models.Permission{
+						permission,
+						models.Permission{
+							ID:          3,
+							Name:        "resource3",
+							Action:      "Read",
+							GuardName:   "Web",
+							DisplayName: "Read Resource3",
+							Description: "permission description...",
+						},
+					},
+				},
 			},
 		})
 	}
