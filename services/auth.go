@@ -17,10 +17,12 @@ type AuthService struct {
 
 // Claims ...
 type Claims struct {
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Address  string `json:"address"`
+	Name        string              `json:"name"`
+	Username    string              `json:"username"`
+	Email       string              `json:"email"`
+	Address     string              `json:"address"`
+	Roles       []string            `json:"roles"`
+	Permissions map[string][]string `json:"permissions"`
 	jwt.StandardClaims
 }
 
@@ -46,10 +48,12 @@ func (service *AuthService) GenerateToken(username string) (token string, err er
 	user := service.userRepository.Lookup(username)
 
 	claims := Claims{
-		Name:     user.Name,
-		Username: user.Username,
-		Email:    user.Email,
-		Address:  user.Address,
+		Name:        user.Name,
+		Username:    user.Username,
+		Email:       user.Email,
+		Address:     user.Address,
+		Roles:       service.GetRoles(user.ID, "web"),
+		Permissions: service.GetPermissions(user.ID, "web"),
 		StandardClaims: jwt.StandardClaims{
 			Id:        strconv.Itoa(int(user.ID)),
 			ExpiresAt: time.Now().Add(7 * 24 * time.Hour).Unix(),
@@ -86,8 +90,8 @@ func (service *AuthService) GetRoles(userID uint, guardName string) []string {
 	roles := service.userRepository.Roles(userID, guardName)
 
 	var result []string
-	for _, value := range roles {
-		result = append(result, value.Name)
+	for _, role := range roles {
+		result = append(result, role.Name)
 	}
 
 	return result
@@ -98,8 +102,8 @@ func (service *AuthService) GetPermissions(userID uint, guardName string) map[st
 	permissions := service.userRepository.Permissions(userID, guardName)
 
 	result := make(map[string][]string)
-	for _, value := range permissions {
-		result[value.Action] = append(result[value.Action], value.Name)
+	for _, permission := range permissions {
+		result[permission.Action] = append(result[permission.Action], permission.Name)
 	}
 
 	return result
