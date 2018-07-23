@@ -1,11 +1,16 @@
-利用gin、gorm和viper建構的樣板
+# GO 後臺管理系統
 
-# Installation
+## Installation
 ```bash
 $ go get -u github.com/fantasy9830/go-boilerplate
 ```
 
-# Start
+## Start
+
+需安裝 `PostgreSQL`
+
+設定資料庫帳號密碼 `$GOPATH/src/github.com/fantasy9830/go-boilerplate/config/debug.yaml`
+
 ```bash
 $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
 ```
@@ -14,25 +19,37 @@ $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
 $ go run main.go
 ```
 
-# Running Migrations
+## Running Migrations
 建立table
 ```http
 POST http://localhost:8080/migrate/run
 ```
 
-# Running Seeds
+## Running Seeds
 建立user假資料
 ```http
 POST http://localhost:8080/seed/run
 ```
 
-# Rollback all database migrations
+## Rollback all database migrations
 刪除所有migrations
 ```http
 DELETE http://localhost:8080/migrate/reset
 ```
+## Auth
+`需要執行 Migration + Seed`
 
-# grpc
+### Role-based access control
+| permissions | 說明                                            |
+|-------------|-------------------------------------------------|
+| action      | 表示權限，例：get、post、read、write、delete... |
+| guard_name  | 表示使用的系統，例：web、api、erp...            |
+
+| roles      | 說明                                 |
+|------------|--------------------------------------|
+| guard_name | 表示使用的系統，例：web、api、erp... |
+
+## grpc
 啟動grpc server
 ```bash
 $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
@@ -47,7 +64,7 @@ GET http://localhost:8080/grpc
 ```
 可以看到 `Hello your name` 表示成功
 
-# docker
+## docker
 ```bash
 $ cd $GOPATH/src/github.com/fantasy9830/go-boilerplate
 ```
@@ -66,3 +83,16 @@ docker run --rm -p 8080:8080 go-boilerplate
 GET http://localhost:8080/ping
 ```
 可以看到 `pong` 表示成功
+
+## Features
+
+* [x] gin
+* [x] gorm + migration + seed
+* [x] config(viper)
+* [x] grpc
+* [x] docker
+* [x] CORS
+* [x] 登入認證功能(JWT)
+* [x] 權限管理
+* [x] Repository and Services Pattern
+* [ ] ...
