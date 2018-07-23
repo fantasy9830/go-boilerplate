@@ -1,5 +1,7 @@
 # GO 後臺管理系統
 
+前端頁面可使用 [react-boilerplate](https://github.com/fantasy9830/react-boilerplate) 搭配
+
 ## Installation
 ```bash
 $ go get -u github.com/fantasy9830/go-boilerplate
