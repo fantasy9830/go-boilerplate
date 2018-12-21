@@ -50,7 +50,7 @@ func SetupRouter() {
 
 	// 登入
 	auth := controllers.NewAuthController()
-	router.POST("/signin", auth.SignIn)
+	router.POST("/login", auth.SignIn)
 
 	// grpc
 	grpc := &controllers.GrpcController{}
