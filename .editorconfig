@@ -18,3 +18,13 @@ trim_trailing_whitespace = false
 ; golang
 [*.go]
 indent_style = tab
+indent_size = 4
+
+[*.{json,yml}]
+indent_style = space
+indent_size = 2
+
+; Makefile
+[Makefile]
+indent_style = tab
+indent_size = 2
