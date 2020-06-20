@@ -3,13 +3,12 @@
 package auth
 
 import (
-	"go-boilerplate/pkg/user"
-
 	"github.com/google/wire"
 )
 
 var (
-	ServiceSet    = wire.NewSet(NewService, wire.Bind(new(IRepository), new(*user.Repository)), user.RepositorySet)
+	RepositorySet = wire.NewSet(NewRepository, NewDB)
+	ServiceSet    = wire.NewSet(NewService, wire.Bind(new(IRepository), new(*Repository)), RepositorySet)
 	ControllerSet = wire.NewSet(NewController, ServiceSet)
 )
 

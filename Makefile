@@ -7,7 +7,9 @@ GOFMT ?= gofmt
 GOLINT ?= golint
 WIRE ?= wire
 
-.PHONY: build clean lint fmt vet generate
+.PHONY: all build clean lint fmt vet generate
+
+all: wire lint fmt vet build
 
 build-dir:
 	@mkdir -p $(DIST)

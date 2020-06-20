@@ -7,7 +7,7 @@ cp .env.example .env
 
 cp config.yml.example config.yml
 
-cp docker/mysql/createdb.sql.example docker/mysql/createdb.sql
+cp docker/mysql/docker-entrypoint-initdb.d/init.sql.example docker/mysql/docker-entrypoint-initdb.d/init.sql
 ```
 
 ### Run container

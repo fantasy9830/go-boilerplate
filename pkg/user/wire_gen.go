@@ -11,6 +11,24 @@ import (
 
 // Injectors from wire.go:
 
+// CreateController CreateController
+func CreateController() *Controller {
+	db := NewDB()
+	repository := NewRepository(db)
+	service := NewService(repository)
+	controller := NewController(service)
+	return controller
+}
+
+// CreateService CreateService
+func CreateService() *Service {
+	db := NewDB()
+	repository := NewRepository(db)
+	service := NewService(repository)
+	return service
+}
+
+// CreateRepository CreateRepository
 func CreateRepository() *Repository {
 	db := NewDB()
 	repository := NewRepository(db)
@@ -21,4 +39,6 @@ func CreateRepository() *Repository {
 
 var (
 	RepositorySet = wire.NewSet(NewRepository, NewDB)
+	ServiceSet    = wire.NewSet(NewService, RepositorySet)
+	ControllerSet = wire.NewSet(NewController, ServiceSet)
 )

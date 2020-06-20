@@ -14,13 +14,19 @@ import (
 
 // Injectors from wire.go:
 
+// InitRoute InitRoute
 func InitRoute() http.Handler {
-	db := user.NewDB()
-	repository := user.NewRepository(db)
+	db := auth.NewDB()
+	repository := auth.NewRepository(db)
 	service := auth.NewService(repository)
 	controller := auth.NewController(service)
+	userDB := user.NewDB()
+	userRepository := user.NewRepository(userDB)
+	userService := user.NewService(userRepository)
+	userController := user.NewController(userService)
 	router := &Router{
 		Auth: controller,
+		User: userController,
 	}
 	handler := NewRoute(router)
 	return handler

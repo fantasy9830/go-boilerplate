@@ -16,7 +16,31 @@ func (r *Router) RegisterAPI(api *gin.RouterGroup) error {
 
 		authorized := v1.Use(middleware.AuthRequired())
 		{
-			authorized.GET("/ws", func(ctx *gin.Context) {
+			user := v1.Group("user")
+			user.GET("profile", r.User.Profile)
+
+			// TODO: user list
+			users := v1.Group("users")
+			users.GET("", func(ctx *gin.Context) {
+				data := make([]string, 0)
+				ctx.JSON(http.StatusOK, data)
+			})
+
+			// TODO: permissions list
+			permissions := v1.Group("permissions")
+			permissions.GET("", func(ctx *gin.Context) {
+				data := make([]string, 0)
+				ctx.JSON(http.StatusOK, data)
+			})
+
+			// TODO: roles list
+			roles := v1.Group("roles")
+			roles.GET("", func(ctx *gin.Context) {
+				data := make([]string, 0)
+				ctx.JSON(http.StatusOK, data)
+			})
+
+			v1.GET("/ws", func(ctx *gin.Context) {
 				websocket.NewClient(ctx)
 			})
 

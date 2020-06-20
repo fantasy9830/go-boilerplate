@@ -4,6 +4,7 @@ package routes
 
 import (
 	"go-boilerplate/pkg/auth"
+	"go-boilerplate/pkg/user"
 	"net/http"
 
 	"github.com/google/wire"
@@ -18,6 +19,7 @@ var (
 func InitRoute() http.Handler {
 	wire.Build(
 		auth.ControllerSet,
+		user.ControllerSet,
 		RouteSet,
 	)
 

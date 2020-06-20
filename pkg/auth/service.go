@@ -16,8 +16,8 @@ var (
 
 // IRepository IRepository
 type IRepository interface {
-	Find(id uint) (*models.User, error)
-	FindByUsername(username string) (*models.User, error)
+	FindUser(id uint) (*models.User, error)
+	FindUserByUsername(username string) (*models.User, error)
 }
 
 // Service Service
@@ -34,7 +34,7 @@ func NewService(repository IRepository) *Service {
 
 // Attempt 驗證帳號密碼
 func (s *Service) Attempt(username string, password string) (u *models.User, err error) {
-	u, err = s.rep.FindByUsername(username)
+	u, err = s.rep.FindUserByUsername(username)
 	if err != nil {
 		return
 	}
@@ -56,7 +56,7 @@ func (s *Service) GetUserFromToken(tokenString string) (user *models.User, err e
 
 	if token.Valid {
 		id, _ := strconv.Atoi(token.Claims.(*jwt.StandardClaims).Subject)
-		user, err = s.rep.Find(uint(id))
+		user, err = s.rep.FindUser(uint(id))
 		if err != nil {
 			return
 		}
