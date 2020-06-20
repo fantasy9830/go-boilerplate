@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"go-boilerplate/pkg/auth"
 	"go-boilerplate/pkg/middleware"
 	"go-boilerplate/pkg/websocket"
 	"net/http"
@@ -9,10 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func registerAPI(api *gin.RouterGroup) {
+// RegisterAPI RegisterAPI
+func (r *Router) RegisterAPI(api *gin.RouterGroup) error {
 	v1 := api.Group("/v1")
 	{
-		auth.InitRoute()(v1)
+		v1.POST("/oauth/token", r.Auth.OauthToken)
 
 		authorized := v1.Use(middleware.AuthRequired())
 		{
@@ -27,4 +27,6 @@ func registerAPI(api *gin.RouterGroup) {
 			})
 		}
 	}
+
+	return nil
 }

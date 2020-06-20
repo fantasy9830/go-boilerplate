@@ -31,7 +31,7 @@ func NweServer() *Server {
 	server := &Server{
 		Server: &http.Server{
 			Addr:         fmt.Sprintf(":%s", config.Server.Port),
-			Handler:      routes.Load(),
+			Handler:      routes.InitRoute(),
 			ReadTimeout:  5 * time.Second,
 			WriteTimeout: 10 * time.Second,
 		},

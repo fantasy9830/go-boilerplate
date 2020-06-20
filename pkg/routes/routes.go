@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Load Load
-func Load() http.Handler {
+// NewRoute NewRoute
+func NewRoute(r IRouter) http.Handler {
 	if config.App.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
@@ -24,13 +24,13 @@ func Load() http.Handler {
 	// api
 	api := e.Group("/api")
 	{
-		registerAPI(api)
+		r.RegisterAPI(api)
 	}
 
 	// web
 	web := e.Group("/")
 	{
-		registerWeb(web)
+		r.RegisterWeb(web)
 	}
 
 	e.NoRoute(NotFound)

@@ -12,15 +12,25 @@ var (
 	ErrUserNotExist = errors.New("User Not Exist")
 )
 
+// DB DB
+type DB *gorm.DB
+
+// NewDB NewDB
+func NewDB() DB {
+	db := models.GetDB()
+
+	return (DB)(db)
+}
+
 // Repository HMI Repository
 type Repository struct {
 	db *gorm.DB
 }
 
 // NewRepository New HMI Repository
-func NewRepository(db *gorm.DB) *Repository {
+func NewRepository(db DB) *Repository {
 	return &Repository{
-		db: db,
+		db: (*gorm.DB)(db),
 	}
 }
 

@@ -7,23 +7,21 @@ package auth
 
 import (
 	"github.com/google/wire"
-	"go-boilerplate/pkg/models"
 	"go-boilerplate/pkg/user"
 )
 
 // Injectors from wire.go:
 
-func InitRoute() Router {
-	db := models.GetDB()
+func CreateController() *Controller {
+	db := user.NewDB()
 	repository := user.NewRepository(db)
 	service := NewService(repository)
 	controller := NewController(service)
-	router := NewRoute(controller)
-	return router
+	return controller
 }
 
 func CreateService() *Service {
-	db := models.GetDB()
+	db := user.NewDB()
 	repository := user.NewRepository(db)
 	service := NewService(repository)
 	return service
@@ -34,5 +32,4 @@ func CreateService() *Service {
 var (
 	ServiceSet    = wire.NewSet(NewService, wire.Bind(new(IRepository), new(*user.Repository)), user.RepositorySet)
 	ControllerSet = wire.NewSet(NewController, ServiceSet)
-	RouteSet      = wire.NewSet(NewRoute, ControllerSet)
 )

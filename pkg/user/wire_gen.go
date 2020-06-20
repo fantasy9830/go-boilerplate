@@ -7,13 +7,12 @@ package user
 
 import (
 	"github.com/google/wire"
-	"go-boilerplate/pkg/models"
 )
 
 // Injectors from wire.go:
 
 func CreateRepository() *Repository {
-	db := models.GetDB()
+	db := NewDB()
 	repository := NewRepository(db)
 	return repository
 }
@@ -21,5 +20,5 @@ func CreateRepository() *Repository {
 // wire.go:
 
 var (
-	RepositorySet = wire.NewSet(NewRepository, models.GetDB)
+	RepositorySet = wire.NewSet(NewRepository, NewDB)
 )

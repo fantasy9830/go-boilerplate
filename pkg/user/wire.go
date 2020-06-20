@@ -3,13 +3,11 @@
 package user
 
 import (
-	"go-boilerplate/pkg/models"
-
 	"github.com/google/wire"
 )
 
 var (
-	RepositorySet = wire.NewSet(NewRepository, models.GetDB)
+	RepositorySet = wire.NewSet(NewRepository, NewDB)
 )
 
 // CreateService CreateService

@@ -11,12 +11,11 @@ import (
 var (
 	ServiceSet    = wire.NewSet(NewService, wire.Bind(new(IRepository), new(*user.Repository)), user.RepositorySet)
 	ControllerSet = wire.NewSet(NewController, ServiceSet)
-	RouteSet      = wire.NewSet(NewRoute, ControllerSet)
 )
 
-// InitRoute InitRoute
-func InitRoute() Router {
-	wire.Build(RouteSet)
+// CreateController CreateController
+func CreateController() *Controller {
+	wire.Build(ControllerSet)
 
 	return nil
 }
