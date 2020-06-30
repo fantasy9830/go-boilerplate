@@ -26,6 +26,7 @@ vendor/
 
 # misc
 /dist
+/release
 config.yml
 .env
 go-boilerplate
