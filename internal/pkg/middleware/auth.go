@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"go-boilerplate/pkg/auth"
+	"go-boilerplate/internal/app/services"
 	"go-boilerplate/pkg/config"
 	"net/http"
 
@@ -23,8 +23,8 @@ func AuthRequired() gin.HandlerFunc {
 		)
 
 		if err == nil {
-			authServ := auth.CreateService()
-			u, err := authServ.GetUserFromToken(token.Raw)
+			authServ := services.CreateAuthService()
+			user, err := authServ.GetUserFromToken(token.Raw)
 			if err != nil {
 				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 					"error": err.Error(),
@@ -32,7 +32,7 @@ func AuthRequired() gin.HandlerFunc {
 				return
 			}
 
-			ctx.Set("user", u)
+			ctx.Set("user", user)
 			ctx.Next()
 			return
 		}

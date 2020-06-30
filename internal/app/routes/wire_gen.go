@@ -7,25 +7,17 @@ package routes
 
 import (
 	"github.com/google/wire"
-	"go-boilerplate/pkg/auth"
-	"go-boilerplate/pkg/user"
+	"go-boilerplate/internal/app/controllers"
 	"net/http"
 )
 
 // Injectors from wire.go:
 
-// InitRoute InitRoute
 func InitRoute() http.Handler {
-	db := auth.NewDB()
-	repository := auth.NewRepository(db)
-	service := auth.NewService(repository)
-	controller := auth.NewController(service)
-	userDB := user.NewDB()
-	userRepository := user.NewRepository(userDB)
-	userService := user.NewService(userRepository)
-	userController := user.NewController(userService)
+	authController := controllers.CreateAuthController()
+	userController := controllers.CreateUserController()
 	router := &Router{
-		Auth: controller,
+		Auth: authController,
 		User: userController,
 	}
 	handler := NewRoute(router)

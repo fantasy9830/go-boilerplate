@@ -1,11 +1,13 @@
-package models
+package database
+
+import "go-boilerplate/internal/app/models"
 
 // Migrate run the migrations.
 func Migrate() {
 	db.AutoMigrate(
-		&User{},
-		&Role{},
-		&Permission{},
+		&models.User{},
+		&models.Role{},
+		&models.Permission{},
 	)
 
 	db.Table("user_roles").AddForeignKey("role_id", "roles(id)", "CASCADE", "RESTRICT")
@@ -25,8 +27,8 @@ func Reverse() {
 		"role_permissions",
 		"user_permissions",
 		"user_roles",
-		&Permission{},
-		&Role{},
-		&User{},
+		&models.Permission{},
+		&models.Role{},
+		&models.User{},
 	)
 }

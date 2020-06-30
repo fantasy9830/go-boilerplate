@@ -1,11 +1,9 @@
 package cmd
 
 import (
+	"go-boilerplate/internal/app"
+	"go-boilerplate/internal/pkg/database"
 	"go-boilerplate/pkg/config"
-	"go-boilerplate/pkg/models"
-	"go-boilerplate/pkg/mqtt"
-	"go-boilerplate/pkg/server"
-	"go-boilerplate/pkg/websocket"
 
 	"github.com/urfave/cli/v2"
 )
@@ -30,19 +28,13 @@ func Start() *cli.Command {
 			}
 
 			// migrate
-			models.Migrate()
+			database.Migrate()
 
-			// init mqtt
-			if err := mqtt.Init(); err != nil {
+			if err := app.Init(); err != nil {
 				return err
 			}
 
-			// init websocket
-			if err := websocket.Init(); err != nil {
-				return err
-			}
-
-			srv := server.NweServer()
+			srv := app.NewServer()
 			if config.Server.HTTPS {
 				return srv.StartTLS()
 			}

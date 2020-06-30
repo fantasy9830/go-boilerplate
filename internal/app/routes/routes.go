@@ -1,8 +1,8 @@
 package routes
 
 import (
+	"go-boilerplate/internal/pkg/middleware"
 	"go-boilerplate/pkg/config"
-	"go-boilerplate/pkg/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +25,12 @@ func NewRoute(r IRouter) http.Handler {
 	api := e.Group("/api")
 	{
 		r.RegisterAPI(api)
+	}
+
+	// websocket
+	ws := e.Group("/ws")
+	{
+		r.RegisterWebSocket(ws)
 	}
 
 	// web

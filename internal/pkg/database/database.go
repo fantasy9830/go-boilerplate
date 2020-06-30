@@ -1,10 +1,19 @@
-package models
+package database
 
 import (
 	"fmt"
 	"go-boilerplate/pkg/config"
 
 	"github.com/jinzhu/gorm"
+
+	// mssql
+	_ "github.com/jinzhu/gorm/dialects/mssql"
+	// mysql
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	// postgres
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	// sqlite
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 var db *gorm.DB
@@ -75,4 +84,18 @@ func ConnectDB(drivers ...string) (connect *gorm.DB, err error) {
 // GetDB GetDB
 func GetDB() *gorm.DB {
 	return db
+}
+
+// Init Init
+func Init() (err error) {
+	db, err = ConnectDB()
+	if err != nil {
+		return fmt.Errorf("Failed to connect to database: %v", err)
+	}
+
+	db.LogMode(config.App.Debug)
+
+	influx = NewInfluxClient()
+
+	return nil
 }

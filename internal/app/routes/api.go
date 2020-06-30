@@ -1,8 +1,7 @@
 package routes
 
 import (
-	"go-boilerplate/pkg/middleware"
-	"go-boilerplate/pkg/websocket"
+	"go-boilerplate/internal/pkg/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -40,11 +39,7 @@ func (r *Router) RegisterAPI(api *gin.RouterGroup) error {
 				ctx.JSON(http.StatusOK, data)
 			})
 
-			v1.GET("/ws", func(ctx *gin.Context) {
-				websocket.NewClient(ctx)
-			})
-
-			authorized.GET("/", func(ctx *gin.Context) {
+			authorized.GET("", func(ctx *gin.Context) {
 				ctx.JSON(http.StatusOK, gin.H{
 					"message": "API v1",
 				})

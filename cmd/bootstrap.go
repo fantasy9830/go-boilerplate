@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"go-boilerplate/internal/pkg/database"
 	"go-boilerplate/pkg/config"
-	"go-boilerplate/pkg/models"
 
 	"github.com/urfave/cli/v2"
 )
@@ -13,8 +13,8 @@ func bootstrap(c *cli.Context) error {
 		return err
 	}
 
-	// init model
-	if err := models.Init(); err != nil {
+	// init database
+	if err := database.Init(); err != nil {
 		return err
 	}
 

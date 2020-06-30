@@ -1,4 +1,4 @@
-DIST := dist
+RELEASE := release
 
 FILENAME ?= goapp
 
@@ -12,13 +12,13 @@ WIRE ?= wire
 all: wire lint fmt vet build
 
 build-dir:
-	@mkdir -p $(DIST)
+	@mkdir -p $(RELEASE)
 
 build: build-dir generate
-	@$(GO) build -ldflags '-s -w' -o=$(DIST)/$(FILENAME)
+	@$(GO) build -ldflags '-s -w' -o=$(RELEASE)/$(FILENAME)
 
 clean:
-	@rm -rf $(DIST)
+	@rm -rf $(RELEASE)
 
 generate:
 	@$(GO) generate

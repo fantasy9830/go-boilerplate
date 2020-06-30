@@ -1,7 +1,9 @@
-package auth
+package controllers
 
 import (
 	"fmt"
+	"go-boilerplate/internal/app/services"
+	"go-boilerplate/pkg/auth"
 	"go-boilerplate/pkg/config"
 	"net/http"
 	"time"
@@ -25,20 +27,20 @@ type OAuthToken struct {
 	ExpiresIn    time.Duration `json:"expires_in,omitempty"`
 }
 
-// Controller Controller
-type Controller struct {
-	serv *Service
+// AuthController Auth Controller
+type AuthController struct {
+	serv *services.AuthService
 }
 
-// NewController New Controller
-func NewController(service *Service) *Controller {
-	return &Controller{
+// NewAuthController New Auth Controller
+func NewAuthController(service *services.AuthService) *AuthController {
+	return &AuthController{
 		serv: service,
 	}
 }
 
 // OauthToken OauthToken
-func (c *Controller) OauthToken(ctx *gin.Context) {
+func (c *AuthController) OauthToken(ctx *gin.Context) {
 	var credentials Credentials
 	if err := ctx.ShouldBind(&credentials); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -52,7 +54,7 @@ func (c *Controller) OauthToken(ctx *gin.Context) {
 			return
 		}
 
-		token, _, err := CreateToken(user.ID)
+		token, _, err := auth.CreateToken(user.ID)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -67,7 +69,7 @@ func (c *Controller) OauthToken(ctx *gin.Context) {
 		})
 		return
 	} else if credentials.GrantType == "refresh_token" {
-		refreshToken, err := RefreshToken(credentials.RefreshToken)
+		refreshToken, err := auth.RefreshToken(credentials.RefreshToken)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

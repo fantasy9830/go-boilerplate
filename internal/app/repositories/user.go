@@ -1,8 +1,8 @@
-package auth
+package repositories
 
 import (
 	"errors"
-	"go-boilerplate/pkg/models"
+	"go-boilerplate/internal/app/models"
 
 	"github.com/jinzhu/gorm"
 )
@@ -12,30 +12,20 @@ var (
 	ErrUserNotExist = errors.New("User Not Exist")
 )
 
-// DB DB
-type DB *gorm.DB
-
-// NewDB NewDB
-func NewDB() DB {
-	db := models.GetDB()
-
-	return (DB)(db)
-}
-
-// Repository HMI Repository
-type Repository struct {
+// UserRepository User Repository
+type UserRepository struct {
 	db *gorm.DB
 }
 
-// NewRepository New HMI Repository
-func NewRepository(db DB) *Repository {
-	return &Repository{
-		db: (*gorm.DB)(db),
+// NewUserRepository New User Repository
+func NewUserRepository(db *gorm.DB) *UserRepository {
+	return &UserRepository{
+		db: db,
 	}
 }
 
-// FindUser FindUser
-func (r *Repository) FindUser(id uint) (*models.User, error) {
+// Find Find
+func (r *UserRepository) Find(id uint) (*models.User, error) {
 	user := new(models.User)
 	if err := r.db.Preload("Roles").Preload("Roles.Permissions").Preload("Permissions").First(&user, id).Error; err != nil {
 		return nil, err
@@ -44,8 +34,8 @@ func (r *Repository) FindUser(id uint) (*models.User, error) {
 	return user, nil
 }
 
-// FindUserByUsername FindUserByUsername
-func (r *Repository) FindUserByUsername(username string) (*models.User, error) {
+// FindByUsername FindByUsername
+func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 	if len(username) == 0 {
 		return nil, ErrUserNotExist
 	}

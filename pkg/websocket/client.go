@@ -1,8 +1,6 @@
 package websocket
 
 import (
-	"errors"
-	"go-boilerplate/pkg/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,24 +8,13 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Error constants
-var (
-	ErrUserNotExist = errors.New("User Not Exist")
-)
-
 // Client Client
 type Client struct {
-	ID      string
-	UserID  uint
-	ws      *websocket.Conn
-	Message chan []byte
-}
-
-// Message Message
-type Message struct {
-	Sender    string `json:"sender,omitempty"`
-	Recipient string `json:"recipient,omitempty"`
-	Content   string `json:"content,omitempty"`
+	ID           string
+	UserID       uint
+	ws           *websocket.Conn
+	WriteMessage chan []byte
+	ReadMessage  chan []byte
 }
 
 // NewClient NewClient
@@ -43,23 +30,26 @@ func NewClient(ctx *gin.Context) (client *Client, err error) {
 		return nil, err
 	}
 
-	if user, ok := ctx.MustGet("user").(*models.User); ok {
-		client = &Client{
-			ID:      uuid.New().String(),
-			UserID:  user.ID,
-			ws:      ws,
-			Message: make(chan []byte),
-		}
-
-		manager.Register(client)
-
-		go client.ReadServe()
-		go client.WriteServe()
-	} else {
-		return nil, ErrUserNotExist
+	client = &Client{
+		ID:           uuid.New().String(),
+		ws:           ws,
+		WriteMessage: make(chan []byte),
+		ReadMessage:  make(chan []byte),
 	}
 
+	manager.Register(client)
+
+	go client.ReadServe()
+	go client.WriteServe()
+
 	return
+}
+
+// SetUserID SetUserID
+func (c *Client) SetUserID(id uint) *Client {
+	c.UserID = id
+
+	return c
 }
 
 // ReadServe ReadServe
@@ -70,13 +60,12 @@ func (c *Client) ReadServe() {
 	}()
 
 	for {
-		_, _, err := c.ws.ReadMessage()
+		_, message, err := c.ws.ReadMessage()
 		if err != nil {
 			break
 		}
 
-		// jsonMessage, _ := json.Marshal(&Message{Sender: c.ID, Content: string(message)})
-		// manager.Broadcast <- jsonMessage
+		c.ReadMessage <- message
 	}
 }
 
@@ -88,7 +77,7 @@ func (c *Client) WriteServe() {
 
 	for {
 		select {
-		case message, ok := <-c.Message:
+		case message, ok := <-c.WriteMessage:
 			if !ok {
 				c.ws.WriteMessage(websocket.CloseMessage, []byte{})
 				return

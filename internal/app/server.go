@@ -1,11 +1,11 @@
-package server
+package app
 
 import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"go-boilerplate/internal/app/routes"
 	"go-boilerplate/pkg/config"
-	"go-boilerplate/pkg/routes"
 	"log"
 	"net/http"
 	"net/url"
@@ -26,8 +26,8 @@ type Server struct {
 	eg             errgroup.Group
 }
 
-// NweServer NweServer
-func NweServer() *Server {
+// NewServer NewServer
+func NewServer() *Server {
 	server := &Server{
 		Server: &http.Server{
 			Addr:         fmt.Sprintf(":%s", config.Server.Port),

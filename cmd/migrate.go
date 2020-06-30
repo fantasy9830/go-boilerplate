@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"go-boilerplate/pkg/models"
+	"go-boilerplate/internal/pkg/database"
 
 	"github.com/urfave/cli/v2"
 )
@@ -30,7 +30,7 @@ func Migrate() *cli.Command {
 					}
 
 					// migrate
-					models.Migrate()
+					database.Migrate()
 
 					return nil
 				},
@@ -44,10 +44,10 @@ func Migrate() *cli.Command {
 					}
 
 					// reverse
-					models.Reverse()
+					database.Reverse()
 
 					// migrate
-					models.Migrate()
+					database.Migrate()
 
 					return nil
 				},
@@ -61,7 +61,7 @@ func Migrate() *cli.Command {
 					}
 
 					// reverse
-					models.Reverse()
+					database.Reverse()
 
 					return nil
 				},

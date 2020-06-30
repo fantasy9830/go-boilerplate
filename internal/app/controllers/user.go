@@ -1,7 +1,8 @@
-package user
+package controllers
 
 import (
-	"go-boilerplate/pkg/models"
+	"go-boilerplate/internal/app/models"
+	"go-boilerplate/internal/app/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,20 +15,20 @@ type Profile struct {
 	Permissions []string `json:"permissions,omitempty"`
 }
 
-// Controller Controller
-type Controller struct {
-	serv *Service
+// UserController UserController
+type UserController struct {
+	serv *services.UserService
 }
 
-// NewController New Controller
-func NewController(service *Service) *Controller {
-	return &Controller{
+// NewUserController New User Controller
+func NewUserController(service *services.UserService) *UserController {
+	return &UserController{
 		serv: service,
 	}
 }
 
 // Profile Profile
-func (c *Controller) Profile(ctx *gin.Context) {
+func (c *UserController) Profile(ctx *gin.Context) {
 	user := ctx.MustGet("user").(*models.User)
 
 	profile := Profile{

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"go-boilerplate/pkg/models"
+	"go-boilerplate/internal/pkg/database"
 
 	"github.com/urfave/cli/v2"
 )
@@ -25,7 +25,7 @@ func Seed() *cli.Command {
 				return err
 			}
 
-			models.Seed()
+			database.Seed()
 
 			return nil
 		},

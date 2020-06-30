@@ -3,10 +3,12 @@ package mqtt
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"go-boilerplate/pkg/config"
 	"io/ioutil"
 	"sync"
+	"time"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
@@ -14,6 +16,12 @@ import (
 
 var (
 	client *Client
+)
+
+// Error constants
+var (
+	ErrPublishTimeout = errors.New("MQTT publish wait timeout")
+	ErrTopicEmpty     = errors.New("The topic is empty")
 )
 
 // Client Client
@@ -102,8 +110,34 @@ func (c *Client) GetClientID() string {
 	return c.options.ClientID
 }
 
+// Publish Publish
+func (c *Client) Publish(topic string, qos byte, payload interface{}) error {
+	if len(topic) == 0 {
+		return ErrTopicEmpty
+	}
+
+	if err := c.ensureConnected(); err != nil {
+		return err
+	}
+
+	token := c.client.Publish(topic, qos, false, payload)
+	if err := token.Error(); err != nil {
+		return err
+	}
+
+	if !token.WaitTimeout(time.Second * 10) {
+		return ErrPublishTimeout
+	}
+
+	return nil
+}
+
 // Subscribe Subscribe
 func (c *Client) Subscribe(topic string, qos byte, message chan<- MQTT.Message) error {
+	if len(topic) == 0 {
+		return ErrTopicEmpty
+	}
+
 	if token := c.client.Subscribe(topic, qos, func(client MQTT.Client, msg MQTT.Message) {
 		message <- msg
 	}); token.Wait() && token.Error() != nil {
@@ -116,4 +150,23 @@ func (c *Client) Subscribe(topic string, qos byte, message chan<- MQTT.Message) 
 // Unsubscribe Unsubscribe
 func (c *Client) Unsubscribe(topic string) MQTT.Token {
 	return c.client.Unsubscribe(topic)
+}
+
+func (c *Client) ensureConnected() error {
+	if !c.client.IsConnected() {
+		c.Lock()
+		defer c.Unlock()
+		if !c.client.IsConnected() {
+			if token := c.client.Connect(); token.Wait() && token.Error() != nil {
+				return token.Error()
+			}
+		}
+	}
+
+	return nil
+}
+
+// Disconnect Disconnect
+func Disconnect() {
+	client.client.Disconnect(250)
 }

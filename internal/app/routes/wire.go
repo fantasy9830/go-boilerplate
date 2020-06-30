@@ -3,8 +3,7 @@
 package routes
 
 import (
-	"go-boilerplate/pkg/auth"
-	"go-boilerplate/pkg/user"
+	"go-boilerplate/internal/app/controllers"
 	"net/http"
 
 	"github.com/google/wire"
@@ -18,8 +17,8 @@ var (
 // InitRoute InitRoute
 func InitRoute() http.Handler {
 	wire.Build(
-		auth.ControllerSet,
-		user.ControllerSet,
+		controllers.CreateAuthController,
+		controllers.CreateUserController,
 		RouteSet,
 	)
 

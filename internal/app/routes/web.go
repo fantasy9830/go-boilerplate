@@ -9,7 +9,7 @@ import (
 
 // RegisterWeb RegisterWeb
 func (r *Router) RegisterWeb(web *gin.RouterGroup) error {
-	web.GET("/", func(ctx *gin.Context) {
+	web.GET("", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"name":    config.App.Name,
 			"version": config.App.Version,

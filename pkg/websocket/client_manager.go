@@ -1,6 +1,9 @@
 package websocket
 
-import "sync"
+import (
+	"encoding/json"
+	"sync"
+)
 
 var manager *ClientManager
 
@@ -27,7 +30,8 @@ func (m *ClientManager) Unregister(client *Client) {
 	m.Lock()
 	defer m.Unlock()
 	if _, ok := m.Clients[client]; ok {
-		close(client.Message)
+		close(client.ReadMessage)
+		close(client.WriteMessage)
 		delete(m.Clients, client)
 	}
 }
@@ -38,19 +42,21 @@ func (m *ClientManager) Broadcast(message []byte) {
 	defer m.Unlock()
 	for client := range m.Clients {
 		select {
-		case client.Message <- message:
+		case client.WriteMessage <- message:
 		default:
-			close(client.Message)
+			close(client.ReadMessage)
+			close(client.WriteMessage)
 			delete(m.Clients, client)
 		}
 	}
 }
 
 // SendMessage send ws message to ws client
-func (m *ClientManager) SendMessage(message []byte, id uint) {
+func (m *ClientManager) SendMessage(message interface{}, id uint) {
+	jsonMessage, _ := json.Marshal(message)
 	for client := range m.Clients {
 		if client.UserID == id {
-			client.Message <- message
+			client.WriteMessage <- jsonMessage
 		}
 	}
 }
