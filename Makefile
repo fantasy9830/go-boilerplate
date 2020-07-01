@@ -1,4 +1,5 @@
 RELEASE := release
+PROTO_DIR := api/proto
 
 FILENAME ?= goapp
 
@@ -6,10 +7,11 @@ GO ?= go
 GOFMT ?= gofmt
 GOLINT ?= golint
 WIRE ?= wire
+PROTOC ?= protoc
 
-.PHONY: all build clean lint fmt vet generate
+.PHONY: all build clean lint fmt vet generate proto wire
 
-all: wire lint fmt vet build
+all: proto wire lint fmt vet build
 
 build-dir:
 	@mkdir -p $(RELEASE)
@@ -34,3 +36,6 @@ vet:
 
 wire:
 	@$(WIRE) ./...
+
+proto:
+	@$(PROTOC) --go_out=$(PROTO_DIR) $(PROTO_DIR)/*.proto
