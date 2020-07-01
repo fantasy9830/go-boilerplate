@@ -1,5 +1,5 @@
 RELEASE := release
-PROTO_DIR := api/proto
+PROTO_DIR := api/protobuf
 
 FILENAME ?= goapp
 
