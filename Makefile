@@ -2,6 +2,7 @@ RELEASE := release
 PROTO_DIR := api/protobuf
 
 FILENAME ?= goapp
+GOFILES := $(shell find . -name "*.go" -type f | grep -v "/vendor/")
 
 GO ?= go
 GOFMT ?= gofmt
@@ -11,12 +12,12 @@ PROTOC ?= protoc
 
 .PHONY: all build clean lint fmt vet generate proto wire
 
-all: proto wire lint fmt vet build
+all: proto wire fmt lint vet build
 
 build-dir:
 	@mkdir -p $(RELEASE)
 
-build: build-dir generate
+build: clean build-dir generate
 	@$(GO) build -ldflags '-s -w' -o=$(RELEASE)/$(FILENAME)
 
 clean:
@@ -26,10 +27,10 @@ generate:
 	@$(GO) generate
 
 lint:
-	@$(GOLINT) ./...
+	@$(GOLINT) $(GOFILES)
 
 fmt:
-	@$(GOFMT) -s -l -w .
+	@$(GOFMT) -s -l -w $(GOFILES)
 
 vet:
 	@$(GO) vet ./...
