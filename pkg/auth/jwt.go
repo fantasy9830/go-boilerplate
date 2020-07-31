@@ -19,7 +19,7 @@ var (
 )
 
 // CreateToken Create JWT
-func CreateToken(id uint, key string) (token string, expire time.Time, err error) {
+func CreateToken(id uint, secret string) (token string, expire time.Time, err error) {
 	expire = time.Now().Add(config.App.TTL * time.Second)
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
 		Id:        uuid.New().String(),
@@ -30,14 +30,14 @@ func CreateToken(id uint, key string) (token string, expire time.Time, err error
 		ExpiresAt: expire.Unix(),
 	})
 
-	token, err = claims.SignedString([]byte(key))
+	token, err = claims.SignedString([]byte(config.App.Key + secret))
 
 	return
 }
 
 // RefreshToken Refresh JWT
-func RefreshToken(tokenString string, key string) (refreshToken string, err error) {
-	token, err := ParseToken(tokenString, key)
+func RefreshToken(tokenString string, secret string) (refreshToken string, err error) {
+	token, err := ParseToken(tokenString, config.App.Key+secret)
 
 	var validationError *jwt.ValidationError
 	if errors.As(err, &validationError) && validationError.Errors == jwt.ValidationErrorExpired {
@@ -61,7 +61,7 @@ func RefreshToken(tokenString string, key string) (refreshToken string, err erro
 				ExpiresAt: expiresAt,
 			})
 
-			refreshToken, err = claims.SignedString([]byte(key))
+			refreshToken, err = claims.SignedString([]byte(config.App.Key + secret))
 		}
 	}
 
@@ -69,9 +69,9 @@ func RefreshToken(tokenString string, key string) (refreshToken string, err erro
 }
 
 // ParseToken Parse JWT
-func ParseToken(tokenString string, key string) (*jwt.Token, error) {
+func ParseToken(tokenString string, secret string) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(key), nil
+		return []byte(config.App.Key + secret), nil
 	})
 }
 

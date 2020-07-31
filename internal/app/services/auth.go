@@ -59,7 +59,12 @@ func (s *AuthService) Attempt(username string, password string) (user *models.Us
 
 // GetUserFromToken GetUserFromToken
 func (s *AuthService) GetUserFromToken(tokenString string) (user *models.User, err error) {
-	token, err := auth.ParseToken(tokenString, config.App.Key)
+	u, err := s.GetUserFromUnverified(tokenString)
+	if err != nil {
+		return
+	}
+
+	token, err := auth.ParseToken(tokenString, u.Password)
 	if err != nil {
 		return
 	}
@@ -71,6 +76,19 @@ func (s *AuthService) GetUserFromToken(tokenString string) (user *models.User, e
 			return
 		}
 	}
+
+	return
+}
+
+// GetUserFromUnverified GetUserFromUnverified
+func (s *AuthService) GetUserFromUnverified(tokenString string) (user *models.User, err error) {
+	claims, err := auth.Decode(tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	id, _ := strconv.Atoi(claims.Subject)
+	user, err = s.rep.Find(uint(id))
 
 	return
 }

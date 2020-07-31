@@ -70,7 +70,7 @@ func (c *AuthController) OauthToken(ctx *gin.Context) {
 			return
 		}
 
-		token, _, err := auth.CreateToken(user.ID, config.App.Key)
+		token, _, err := auth.CreateToken(user.ID, user.Password)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -85,7 +85,13 @@ func (c *AuthController) OauthToken(ctx *gin.Context) {
 		})
 		return
 	} else if credentials.GrantType == "refresh_token" {
-		refreshToken, err := auth.RefreshToken(credentials.RefreshToken, config.App.Key)
+		user, err := c.serv.GetUserFromUnverified(credentials.RefreshToken)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		refreshToken, err := auth.RefreshToken(credentials.RefreshToken, user.Password)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -171,7 +177,13 @@ func (c *AuthController) EmailVerify(ctx *gin.Context) {
 		return
 	}
 
-	_, err := auth.ParseToken(dataQuery.Signature, config.App.Key)
+	user, err := c.serv.GetUserFromUnverified(dataQuery.Signature)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err = auth.ParseToken(dataQuery.Signature, user.Password)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
