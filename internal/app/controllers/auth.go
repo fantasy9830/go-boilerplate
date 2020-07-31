@@ -130,6 +130,27 @@ func (c *AuthController) Register(ctx *gin.Context) {
 	return
 }
 
+// EmailResend EmailResend
+func (c *AuthController) EmailResend(ctx *gin.Context) {
+	var dataForm struct {
+		Username string `form:"username" json:"username"`
+	}
+
+	if err := ctx.ShouldBind(&dataForm); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	url, err := c.serv.SendEmailVerification(dataForm.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, url)
+	return
+}
+
 // EmailVerify EmailVerify
 func (c *AuthController) EmailVerify(ctx *gin.Context) {
 	var dataURI struct {

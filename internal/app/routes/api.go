@@ -13,6 +13,7 @@ func (r *Router) RegisterAPI(api *gin.RouterGroup) error {
 	{
 		v1.POST("/oauth/token", r.Auth.OauthToken)
 		v1.POST("/register", r.Auth.Register)
+		v1.POST("/email/resend", r.Auth.EmailResend)
 		v1.POST("/email/verify/:id", r.Auth.EmailVerify)
 		v1.POST("/password/email", r.Auth.PasswordEmail)
 		v1.POST("/password/reset", r.Auth.PasswordReset)

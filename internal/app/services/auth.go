@@ -88,6 +88,21 @@ func (s *AuthService) EmailVerify(id uint) (*models.User, error) {
 	})
 }
 
+// SendEmailVerification SendEmailVerification
+func (s *AuthService) SendEmailVerification(username string) (string, error) {
+	user, err := s.rep.FindByUsername(username)
+	if err != nil {
+		return "", err
+	}
+
+	token, _, err := auth.CreateToken(user.ID, user.Password)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s/confirm-email?id=%d&signature=%s", config.App.Server.Host, user.ID, token), nil
+}
+
 // SendResetLink SendResetLink
 func (s *AuthService) SendResetLink(username string) (string, error) {
 	user, err := s.rep.FindByUsername(username)
