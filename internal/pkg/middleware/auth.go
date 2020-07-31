@@ -31,7 +31,7 @@ func AuthRequired() gin.HandlerFunc {
 			// 		}
 
 			// 		ctx.Set("user", u)
-			// 		refreshToken, err := auth.RefreshToken(token.Raw)
+			// 		refreshToken, err := auth.RefreshToken(token.Raw, config.App.Key)
 			// 		if err != nil {
 			// 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			// 				"error": err.Error(),

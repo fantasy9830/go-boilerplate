@@ -2,9 +2,12 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"go-boilerplate/internal/app/models"
 	"go-boilerplate/pkg/auth"
+	"go-boilerplate/pkg/config"
 	"strconv"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
@@ -17,6 +20,8 @@ var (
 
 // IUserRepository IUserRepository
 type IUserRepository interface {
+	Create(user models.User) (*models.User, error)
+	Update(id uint, user models.User) (*models.User, error)
 	Find(id uint) (*models.User, error)
 	FindByUsername(username string) (*models.User, error)
 }
@@ -40,6 +45,10 @@ func (s *AuthService) Attempt(username string, password string) (user *models.Us
 		return
 	}
 
+	if user.EmailVerifiedAt == nil {
+		return nil, ErrAuthFailed
+	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err == nil {
 		return
@@ -50,7 +59,7 @@ func (s *AuthService) Attempt(username string, password string) (user *models.Us
 
 // GetUserFromToken GetUserFromToken
 func (s *AuthService) GetUserFromToken(tokenString string) (user *models.User, err error) {
-	token, err := auth.ParseToken(tokenString)
+	token, err := auth.ParseToken(tokenString, config.App.Key)
 	if err != nil {
 		return
 	}
@@ -64,4 +73,61 @@ func (s *AuthService) GetUserFromToken(tokenString string) (user *models.User, e
 	}
 
 	return
+}
+
+// Register Register
+func (s *AuthService) Register(user models.User) (*models.User, error) {
+	return s.rep.Create(user)
+}
+
+// EmailVerify EmailVerify
+func (s *AuthService) EmailVerify(id uint) (*models.User, error) {
+	t := time.Now()
+	return s.rep.Update(id, models.User{
+		EmailVerifiedAt: &t,
+	})
+}
+
+// SendResetLink SendResetLink
+func (s *AuthService) SendResetLink(username string) (string, error) {
+	user, err := s.rep.FindByUsername(username)
+	if err != nil {
+		return "", err
+	}
+
+	token, _, err := auth.CreateToken(user.ID, user.Password)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s/reset-password?token=%s", config.App.Server.Host, token), nil
+}
+
+// PasswordReset PasswordReset
+func (s *AuthService) PasswordReset(tokenString string, password string) (*jwt.StandardClaims, error) {
+	claims, err := auth.Decode(tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := strconv.Atoi(claims.Subject)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := s.rep.Find(uint(userID))
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = auth.ParseToken(tokenString, user.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	s.rep.Update(uint(userID), models.User{
+		Password: password,
+	})
+
+	return claims, nil
 }

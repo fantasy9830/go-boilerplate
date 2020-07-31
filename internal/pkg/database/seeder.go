@@ -1,21 +1,27 @@
 package database
 
-import "go-boilerplate/internal/app/models"
+import (
+	"go-boilerplate/internal/app/models"
+	"time"
+)
 
 // Seed Run the seeds.
 func Seed() {
 	// User
+	t := time.Now()
 	adminUser := &models.User{
-		Name:     "Admin",
-		Username: "admin",
-		Password: "admin",
-		Email:    "admin@gmail.com",
+		Name:            "Admin",
+		Username:        "admin",
+		Password:        "admin",
+		Email:           "admin@gmail.com",
+		EmailVerifiedAt: &t,
 	}
 	demoUser := &models.User{
-		Name:     "Demo",
-		Username: "demo",
-		Password: "demo",
-		Email:    "demo@gmail.com",
+		Name:            "Demo",
+		Username:        "demo",
+		Password:        "demo",
+		Email:           "demo@gmail.com",
+		EmailVerifiedAt: &t,
 	}
 
 	// Permission

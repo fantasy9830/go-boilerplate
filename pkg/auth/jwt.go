@@ -1,9 +1,11 @@
 package auth
 
 import (
+	"encoding/json"
 	"errors"
 	"go-boilerplate/pkg/config"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -13,10 +15,11 @@ import (
 // Error constants
 var (
 	ErrTokenExpired = errors.New("Token has expired and can no longer be refreshed")
+	ErrTokenInvalid = errors.New("Token is invalid")
 )
 
 // CreateToken Create JWT
-func CreateToken(id uint) (token string, expire time.Time, err error) {
+func CreateToken(id uint, key string) (token string, expire time.Time, err error) {
 	expire = time.Now().Add(config.App.TTL * time.Second)
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
 		Id:        uuid.New().String(),
@@ -27,14 +30,14 @@ func CreateToken(id uint) (token string, expire time.Time, err error) {
 		ExpiresAt: expire.Unix(),
 	})
 
-	token, err = claims.SignedString([]byte(config.App.Key))
+	token, err = claims.SignedString([]byte(key))
 
 	return
 }
 
 // RefreshToken Refresh JWT
-func RefreshToken(tokenString string) (refreshToken string, err error) {
-	token, err := ParseToken(tokenString)
+func RefreshToken(tokenString string, key string) (refreshToken string, err error) {
+	token, err := ParseToken(tokenString, key)
 
 	var validationError *jwt.ValidationError
 	if errors.As(err, &validationError) && validationError.Errors == jwt.ValidationErrorExpired {
@@ -58,7 +61,7 @@ func RefreshToken(tokenString string) (refreshToken string, err error) {
 				ExpiresAt: expiresAt,
 			})
 
-			refreshToken, err = claims.SignedString([]byte(config.App.Key))
+			refreshToken, err = claims.SignedString([]byte(key))
 		}
 	}
 
@@ -66,8 +69,25 @@ func RefreshToken(tokenString string) (refreshToken string, err error) {
 }
 
 // ParseToken Parse JWT
-func ParseToken(tokenString string) (*jwt.Token, error) {
+func ParseToken(tokenString string, key string) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(config.App.Key), nil
+		return []byte(key), nil
 	})
+}
+
+// Decode Decode
+func Decode(tokenString string) (claims *jwt.StandardClaims, err error) {
+	payload := strings.Split(tokenString, ".")
+	if len(payload) != 3 {
+		return nil, ErrTokenInvalid
+	}
+
+	bytes, err := jwt.DecodeSegment(payload[1])
+	if err != nil {
+		return nil, err
+	}
+
+	json.Unmarshal(bytes, &claims)
+
+	return
 }

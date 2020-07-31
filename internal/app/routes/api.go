@@ -12,6 +12,10 @@ func (r *Router) RegisterAPI(api *gin.RouterGroup) error {
 	v1 := api.Group("/v1")
 	{
 		v1.POST("/oauth/token", r.Auth.OauthToken)
+		v1.POST("/register", r.Auth.Register)
+		v1.POST("/email/verify/:id", r.Auth.EmailVerify)
+		v1.POST("/password/email", r.Auth.PasswordEmail)
+		v1.POST("/password/reset", r.Auth.PasswordReset)
 
 		authorized := v1.Use(middleware.AuthRequired())
 		{

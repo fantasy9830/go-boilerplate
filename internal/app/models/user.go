@@ -10,15 +10,16 @@ import (
 
 // User user model
 type User struct {
-	ID          uint        `json:"id,omitempty" gorm:"primary_key"`
-	Name        string      `json:"name,omitempty"`
-	Username    string      `json:"username,omitempty" gorm:"unique"`
-	Password    string      `json:"password,omitempty"`
-	Email       string      `json:"email,omitempty"`
-	CreatedAt   time.Time   `json:"created_at,omitempty"`
-	UpdatedAt   time.Time   `json:"updated_at,omitempty"`
-	Roles       Roles       `json:"roles,omitempty" gorm:"many2many:user_roles;"`
-	Permissions Permissions `json:"permissions,omitempty" gorm:"many2many:user_permissions;"`
+	ID              uint        `json:"id,omitempty" gorm:"primary_key"`
+	Name            string      `json:"name,omitempty"`
+	Username        string      `json:"username,omitempty" gorm:"unique"`
+	Password        string      `json:"password,omitempty"`
+	Email           string      `json:"email,omitempty"`
+	EmailVerifiedAt *time.Time  `json:"email_verified_at,omitempty"`
+	CreatedAt       *time.Time  `json:"created_at,omitempty"`
+	UpdatedAt       *time.Time  `json:"updated_at,omitempty"`
+	Roles           Roles       `json:"roles,omitempty" gorm:"many2many:user_roles;"`
+	Permissions     Permissions `json:"permissions,omitempty" gorm:"many2many:user_permissions;"`
 }
 
 // Users Users

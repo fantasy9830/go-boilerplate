@@ -5,6 +5,7 @@ import (
 	"go-boilerplate/internal/app/models"
 
 	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Error constants
@@ -46,4 +47,33 @@ func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+// Create Create
+func (r *UserRepository) Create(user models.User) (*models.User, error) {
+	if err := r.db.Create(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// Update Update
+func (r *UserRepository) Update(id uint, user models.User) (*models.User, error) {
+	u, err := r.Find(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Password != "" {
+		hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+		user.Password = string(hashPassword)
+	}
+
+	r.db.Model(u).Updates(user)
+
+	return u, nil
 }
