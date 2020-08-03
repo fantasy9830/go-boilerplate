@@ -61,19 +61,23 @@ func AuthRequired() gin.HandlerFunc {
 
 // GetUserFromRequest GetUserFromRequest
 func GetUserFromRequest(req *http.Request) (user *models.User, token *jwt.Token, err error) {
+	authServ := services.CreateAuthService()
 	token, err = request.ParseFromRequestWithClaims(
 		req,
 		request.OAuth2Extractor,
 		&jwt.StandardClaims{},
 		func(token *jwt.Token) (interface{}, error) {
-			return []byte(config.App.Key), nil
+			u, err := authServ.GetUserFromToken(token.Raw)
+			if err != nil {
+				return nil, err
+			}
+			return []byte(config.App.Key + u.Password), nil
 		},
 	)
 	if err != nil {
 		return
 	}
 
-	authServ := services.CreateAuthService()
 	user, err = authServ.GetUserFromToken(token.Raw)
 
 	return
