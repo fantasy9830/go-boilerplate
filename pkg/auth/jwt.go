@@ -37,7 +37,7 @@ func CreateToken(id uint, secret string) (token string, expire time.Time, err er
 
 // RefreshToken Refresh JWT
 func RefreshToken(tokenString string, secret string) (refreshToken string, err error) {
-	token, err := ParseToken(tokenString, config.App.Key+secret)
+	token, err := ParseToken(tokenString, secret)
 
 	var validationError *jwt.ValidationError
 	if errors.As(err, &validationError) && validationError.Errors == jwt.ValidationErrorExpired {
