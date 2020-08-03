@@ -70,11 +70,7 @@ func (s *AuthService) GetUserFromToken(tokenString string) (user *models.User, e
 	}
 
 	if token.Valid {
-		id, _ := strconv.Atoi(token.Claims.(*jwt.StandardClaims).Subject)
-		user, err = s.rep.Find(uint(id))
-		if err != nil {
-			return
-		}
+		user = u
 	}
 
 	return
