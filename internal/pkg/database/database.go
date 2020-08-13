@@ -95,7 +95,10 @@ func Init() (err error) {
 
 	db.LogMode(config.App.Debug)
 
-	influx = NewInfluxClient()
+	influxClient = NewInfluxClient()
+	writeAPI = influxClient.WriteApi("", config.InfluxDB.Dbname)
+	writeAPIBlocking = influxClient.WriteApiBlocking("", config.InfluxDB.Dbname)
+	queryAPI = influxClient.QueryApi("")
 
 	return nil
 }
