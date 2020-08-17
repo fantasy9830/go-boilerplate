@@ -5,6 +5,7 @@ import (
 	"go-boilerplate/pkg/config"
 	"net/http"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +18,9 @@ func NewRoute(r IRouter) http.Handler {
 	}
 
 	e := gin.New()
+	if config.App.Debug {
+		pprof.Register(e)
+	}
 
 	// middleware
 	middleware.RouteMiddleware(e)

@@ -4,7 +4,6 @@ import (
 	"go-boilerplate/pkg/config"
 
 	"github.com/gin-contrib/gzip"
-	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +18,6 @@ func RouteMiddleware(e *gin.Engine) *gin.Engine {
 
 	// Logger middleware
 	if config.App.Debug {
-		pprof.Register(e)
 		e.Use(gin.Logger())
 	}
 
