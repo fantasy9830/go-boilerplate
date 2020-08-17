@@ -189,7 +189,7 @@ func (c *AuthController) EmailVerify(ctx *gin.Context) {
 		return
 	}
 
-	user, err := c.serv.EmailVerify(dataURI.ID)
+	user, err = c.serv.EmailVerify(dataURI.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
