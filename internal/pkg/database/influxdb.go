@@ -47,15 +47,36 @@ func GetInfluxClient() *InfluxClient {
 
 // GetWriteAPI GetWriteAPI
 func (c *InfluxClient) GetWriteAPI() api.WriteApi {
+	c.Lock()
+	defer c.Unlock()
+
+	if c.writeAPI == nil {
+		c.writeAPI = c.client.WriteApi("", config.InfluxDB.Dbname)
+	}
+
 	return c.writeAPI
 }
 
 // GetWriteAPIBlocking GetWriteAPIBlocking
 func (c *InfluxClient) GetWriteAPIBlocking() api.WriteApiBlocking {
+	c.Lock()
+	defer c.Unlock()
+
+	if c.writeAPIBlocking == nil {
+		c.writeAPIBlocking = c.client.WriteApiBlocking("", config.InfluxDB.Dbname)
+	}
+
 	return c.writeAPIBlocking
 }
 
 // GetQueryAPI GetQueryAPI
 func (c *InfluxClient) GetQueryAPI() api.QueryApi {
+	c.Lock()
+	defer c.Unlock()
+
+	if c.queryAPI == nil {
+		c.queryAPI = c.client.QueryApi("")
+	}
+
 	return c.queryAPI
 }
