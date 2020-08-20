@@ -3,42 +3,59 @@ package database
 import (
 	"fmt"
 	"go-boilerplate/pkg/config"
+	"sync"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go"
 	"github.com/influxdata/influxdb-client-go/api"
 )
 
 var (
-	influxClient     influxdb2.Client
+	influx *InfluxClient
+)
+
+// InfluxClient InfluxClient
+type InfluxClient struct {
+	sync.Mutex
+	client           influxdb2.Client
 	writeAPI         api.WriteApi
 	writeAPIBlocking api.WriteApiBlocking
 	queryAPI         api.QueryApi
-)
+}
 
 // NewInfluxClient NewInfluxClient
-func NewInfluxClient() influxdb2.Client {
+func NewInfluxClient() *InfluxClient {
 	serverURL := fmt.Sprintf("http://%s:%s", config.InfluxDB.Host, config.InfluxDB.Port)
 	authToken := fmt.Sprintf("%s:%s", config.InfluxDB.Username, config.InfluxDB.Password)
 
-	return influxdb2.NewClient(serverURL, authToken)
+	client := influxdb2.NewClient(serverURL, authToken)
+	writeAPI := client.WriteApi("", config.InfluxDB.Dbname)
+	writeAPIBlocking := client.WriteApiBlocking("", config.InfluxDB.Dbname)
+	queryAPI := client.QueryApi("")
+
+	return &InfluxClient{
+		client:           client,
+		writeAPI:         writeAPI,
+		writeAPIBlocking: writeAPIBlocking,
+		queryAPI:         queryAPI,
+	}
 }
 
 // GetInfluxClient GetInfluxClient
-func GetInfluxClient() influxdb2.Client {
-	return influxClient
+func GetInfluxClient() *InfluxClient {
+	return influx
 }
 
 // GetWriteAPI GetWriteAPI
-func GetWriteAPI() api.WriteApi {
-	return writeAPI
+func (c *InfluxClient) GetWriteAPI() api.WriteApi {
+	return c.writeAPI
 }
 
 // GetWriteAPIBlocking GetWriteAPIBlocking
-func GetWriteAPIBlocking() api.WriteApiBlocking {
-	return writeAPIBlocking
+func (c *InfluxClient) GetWriteAPIBlocking() api.WriteApiBlocking {
+	return c.writeAPIBlocking
 }
 
 // GetQueryAPI GetQueryAPI
-func GetQueryAPI() api.QueryApi {
-	return queryAPI
+func (c *InfluxClient) GetQueryAPI() api.QueryApi {
+	return c.queryAPI
 }
