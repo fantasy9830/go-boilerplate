@@ -120,6 +120,11 @@ func (r *RedisClient) SMembers(key string) ([]string, error) {
 	return r.client.SMembers(r.Context(), r.wrapperKey(key)).Result()
 }
 
+// SCard SCard
+func (r *RedisClient) SCard(key string) int64 {
+	return r.client.SCard(r.Context(), r.wrapperKey(key)).Val()
+}
+
 // Exists Exists
 func (r *RedisClient) Exists(key string) bool {
 	return r.client.Exists(r.Context(), r.wrapperKey(key)).Val() == 1
