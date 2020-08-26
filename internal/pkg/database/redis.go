@@ -67,6 +67,14 @@ func (r *RedisClient) Get(key string) (string, error) {
 	return r.client.Get(r.Context(), r.wrapperKey(key)).Result()
 }
 
+// GetInt GetInt
+func (r *RedisClient) GetInt(key string) (int, error) {
+	r.Lock()
+	defer r.Unlock()
+
+	return r.client.Get(r.Context(), r.wrapperKey(key)).Int()
+}
+
 // Set Set
 func (r *RedisClient) Set(key string, value interface{}) error {
 	r.Lock()
