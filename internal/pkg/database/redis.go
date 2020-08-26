@@ -9,6 +9,10 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+var (
+	rdb *RedisClient
+)
+
 // RedisClient RedisClient
 type RedisClient struct {
 	sync.Mutex
@@ -30,6 +34,11 @@ func NewRedisClient() (*RedisClient, error) {
 	}
 
 	return redisClient, redisClient.Ping()
+}
+
+// GetRedisClient GetRedisClient
+func GetRedisClient() *RedisClient {
+	return rdb
 }
 
 // Context Context

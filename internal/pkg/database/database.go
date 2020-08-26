@@ -95,6 +95,11 @@ func Init() (err error) {
 
 	db.LogMode(config.App.Debug)
 
+	rdb, err = NewRedisClient()
+	if err != nil {
+		return fmt.Errorf("Failed to connect to redis: %v", err)
+	}
+
 	influx = NewInfluxClient()
 
 	return nil
