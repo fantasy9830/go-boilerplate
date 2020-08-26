@@ -107,6 +107,19 @@ func (r *RedisClient) DecrBy(key string, decrement int64) error {
 	return r.client.DecrBy(r.Context(), r.wrapperKey(key), decrement).Err()
 }
 
+// SAdd SAdd
+func (r *RedisClient) SAdd(key string, members ...interface{}) error {
+	r.Lock()
+	defer r.Unlock()
+
+	return r.client.SAdd(r.Context(), r.wrapperKey(key), members...).Err()
+}
+
+// SMembers SMembers
+func (r *RedisClient) SMembers(key string) ([]string, error) {
+	return r.client.SMembers(r.Context(), r.wrapperKey(key)).Result()
+}
+
 // Exists Exists
 func (r *RedisClient) Exists(key string) bool {
 	return r.client.Exists(r.Context(), r.wrapperKey(key)).Val() == 1
