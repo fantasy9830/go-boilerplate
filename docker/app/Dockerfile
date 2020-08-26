@@ -1,5 +1,7 @@
 FROM golang:latest
 
+LABEL maintainer="Ricky Lu <fantasy9830@gmail.com>"
+
 WORKDIR $GOPATH/src/app
 
 # Instal package

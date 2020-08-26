@@ -13,6 +13,11 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
+    depends_on:
+       - "mysql"
+       - "influxdb"
+       - "mqtt-broker"
+       - "redis"
     environment:
       - TZ=${TIMEZONE}
     volumes:
@@ -27,10 +32,13 @@ services:
   ### Dev ###
   dev:
     build:
-      container_name: dev
-      build:
-        context: .
-        dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+       - "mysql"
+       - "influxdb"
+       - "mqtt-broker"
+       - "redis"
     volumes:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
     ports:
@@ -56,6 +64,16 @@ services:
       - "${MYSQL_PORT}:3306"
     networks:
       - gonet
+
+  ### Redis ###
+  redis:
+    build: ./docker/redis
+    volumes:
+      - ${DATA_PATH_HOST}/redis:/data
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - eznet
 
   ### InfluxDB ###
   influxdb:

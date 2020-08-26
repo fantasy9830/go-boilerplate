@@ -20,6 +20,7 @@ type (
 		Server     server   `yaml:"server"`
 		MQTT       mqtt     `yaml:"mqtt"`
 		InfluxDB   influxdb `yaml:"influxdb"`
+		Redis      redis    `yaml:"redis"`
 		Database   database `yaml:"database"`
 	}
 	server struct {
@@ -44,6 +45,11 @@ type (
 		Dbname   string `yaml:"dbname"`
 		Username string `yaml:"username"`
 		Password string `yaml:"password"`
+	}
+	redis struct {
+		Host   string `yaml:"host"`
+		Port   string `yaml:"port"`
+		Prefix string `yaml:"prefix"`
 	}
 	database struct {
 		Default string `yaml:"default"`
@@ -90,6 +96,7 @@ var (
 	Server   = &server{}
 	MQTT     = &mqtt{}
 	InfluxDB = &influxdb{}
+	Redis    = &redis{}
 	Database = &database{}
 )
 
@@ -118,6 +125,7 @@ func Load(path string) (err error) {
 	Server = &App.Server
 	MQTT = &App.MQTT
 	InfluxDB = &App.InfluxDB
+	Redis = &App.Redis
 	Database = &App.Database
 
 	return nil

@@ -1,5 +1,7 @@
 FROM eclipse-mosquitto:latest
 
+LABEL maintainer="Ricky Lu <fantasy9830@gmail.com>"
+
 COPY mosquitto.conf /mosquitto/config/mosquitto.conf
 
 COPY ca.crt /mosquitto/certs/ca.crt

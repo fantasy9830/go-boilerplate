@@ -20,6 +20,10 @@ influxdb:
   dbname: goapp
   username: appuser
   password: secret
+redis:
+  host: redis
+  port: 6379
+  prefix: "goapp_"
 database:
   default: mysql
   mysql:
