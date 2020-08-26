@@ -109,9 +109,6 @@ func (r *RedisClient) DecrBy(key string, decrement int64) error {
 
 // Exists Exists
 func (r *RedisClient) Exists(key string) bool {
-	r.Lock()
-	defer r.Unlock()
-
 	return r.client.Exists(r.Context(), r.wrapperKey(key)).Val() == 1
 }
 
