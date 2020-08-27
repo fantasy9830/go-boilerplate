@@ -59,6 +59,16 @@ func (r *RedisClient) Ping() error {
 	return r.client.Ping(r.Context()).Err()
 }
 
+// SetPrefix SetPrefix
+func (r *RedisClient) SetPrefix(prefix string) *RedisClient {
+	r.Lock()
+	defer r.Unlock()
+
+	r.prefix = prefix
+
+	return r
+}
+
 // Get Get
 func (r *RedisClient) Get(key string) (string, error) {
 	r.Lock()
