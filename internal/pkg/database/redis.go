@@ -106,10 +106,6 @@ func (r *RedisClient) IncrBy(key string, value int64) error {
 	r.Lock()
 	defer r.Unlock()
 
-	if !r.Exists(key) {
-		return fmt.Errorf("key '%s' not exist", key)
-	}
-
 	return r.client.IncrBy(r.Context(), r.wrapperKey(key), value).Err()
 }
 
@@ -117,10 +113,6 @@ func (r *RedisClient) IncrBy(key string, value int64) error {
 func (r *RedisClient) DecrBy(key string, decrement int64) error {
 	r.Lock()
 	defer r.Unlock()
-
-	if !r.Exists(key) {
-		return fmt.Errorf("key '%s' not exist", key)
-	}
 
 	return r.client.DecrBy(r.Context(), r.wrapperKey(key), decrement).Err()
 }
