@@ -39,4 +39,4 @@ wire:
 	@$(WIRE) ./...
 
 proto:
-	@$(PROTOC) --go_out=$(PROTO_DIR) $(PROTO_DIR)/*.proto
+	@$(PROTOC) --go_out=$(PROTO_DIR) --go-grpc_out=$(PROTO_DIR) $(PROTO_DIR)/*.proto

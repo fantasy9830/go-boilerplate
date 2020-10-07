@@ -30,8 +30,9 @@ RUN go get -u golang.org/x/lint/golint
 # Install Wire
 RUN go get -u github.com/google/wire/cmd/wire
 
-# Install protoc-gen-go
+# Install protoc-gen-go & protoc-gen-go-grpc
 RUN go get -u google.golang.org/protobuf/cmd/protoc-gen-go
+RUN go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 # Install Protoc
 RUN curl -L https://github.com/protocolbuffers/protobuf/releases/download/v3.12.3/protoc-3.12.3-linux-x86_64.zip -o /tmp/protoc.zip && \
