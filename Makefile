@@ -18,7 +18,7 @@ build-dir:
 	@mkdir -p $(RELEASE)
 
 build: clean build-dir generate
-	@$(GO) build -ldflags '-s -w' -o=$(RELEASE)/$(FILENAME)
+	@CGO_ENABLED=0 $(GO) build -ldflags '-s -w -extldflags "-static -fPIC"' -o=$(RELEASE)/$(FILENAME)
 
 clean:
 	@rm -rf $(RELEASE)
