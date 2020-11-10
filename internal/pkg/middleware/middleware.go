@@ -14,7 +14,6 @@ func RouteMiddleware(e *gin.Engine) *gin.Engine {
 		gin.Recovery(),
 		CROS(),
 		gzip.Gzip(gzip.DefaultCompression),
-		RateLimit(),
 	)
 
 	// Logger middleware
