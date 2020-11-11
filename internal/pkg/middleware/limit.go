@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/didip/tollbooth"
-	"github.com/didip/tollbooth/limiter"
+	"github.com/didip/tollbooth/v6"
+	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/gin-gonic/gin"
 )
 
-var rateLimiter = tollbooth.NewLimiter(1, &limiter.ExpirableOptions{DefaultExpirationTTL: time.Hour})
+var rateLimiter = tollbooth.NewLimiter(3, &limiter.ExpirableOptions{DefaultExpirationTTL: time.Hour})
 
 // RateLimit RateLimit
 func RateLimit() gin.HandlerFunc {
