@@ -24,13 +24,13 @@ vendor/
 # vscode
 .vscode/
 
+# idea
+.idea/
+
 # misc
 /dist
 /release
-config.yml
 .env
-go-boilerplate
-*.exe
 *.db
 *.log
 __debug_bin

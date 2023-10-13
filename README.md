@@ -1,49 +1,29 @@
-# go-boilerplate
+# GO Boilerplate
 
-## Configuration
+GO Boilerplate
 
-```bash
-cp .env.example .env
+## Installation
 
-cp config.yml.example config.yml
+Install [Docker](https://docs.docker.com/engine/install/ubuntu/)
 
-cp docker/mysql/docker-entrypoint-initdb.d/init.sql.example docker/mysql/docker-entrypoint-initdb.d/init.sql
-```
-
-### Run container
+Install [Docker Compose](https://docs.docker.com/compose/install/)
 
 ```bash
 docker-compose up -d
 ```
 
-### Enter the app container
+## Usage
 
 ```bash
-docker-compose exec app bash
+docker exec -it auth bash
 ```
-
-## App container
-
-### Start
 
 ```bash
-go run main.go start
+go run cmd/auth/main.go
 ```
 
-### Build
+## Go Project Layout
+[Standard Go Project Layout](https://github.com/golang-standards/project-layout/blob/master/README_zh-TW.md)
 
-```bash
-make build
-```
-
-### Clean
-
-```bash
-make clean
-```
-
-## MQTT Test
-
-```bash
-mosquitto_pub -h 192.168.10.11 -t "topic1/topic2" -m 'message' --cafile ./ca.crt --cert ./client.crt --key ./client.key --insecure
-```
+## Git Commit Message Conventions
+[Git Commit Message Conventions](https://wadehuanglearning.blogspot.com/2019/05/commit-commit-commit-why-what-commit.html)

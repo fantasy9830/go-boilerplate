@@ -1,0 +1,4 @@
+providers:
+  docker: {}
+api:
+  insecure: true

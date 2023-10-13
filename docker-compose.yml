@@ -1,110 +1,100 @@
-version: "3"
+version: '3'
 
 networks:
   gonet:
     driver: bridge
 
 services:
-  ### App ###
-  app:
-    build:
-      context: ./docker/app
-      args:
-        - http_proxy
-        - https_proxy
-        - no_proxy
-    depends_on:
-       - "mysql"
-       - "influxdb"
-       - "mqtt-broker"
-       - "redis"
-    environment:
-      - TZ=${TIMEZONE}
+  traefik:
+    image: traefik:2.10
+    restart: always
+    ports:
+      # The Web UI (enabled by --api.insecure=true)
+      - 8080:8080
+      # The HTTP port
+      - 80:80
     volumes:
-      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      # The Static Configuration
+      - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml
+    networks:
+      - gonet
+
+  auth:
+    container_name: auth
+    depends_on:
+      - traefik
+      - mailhog
+      - redis
+      - postgres
+    build:
+      context: ./docker/dev
     tty: true
-    ports:
-      - "${HOST_HTTP_PORT}:80"
-      - "${HOST_HTTPS_PORT}:443"
-    networks:
-      - gonet
-
-  ### Dev ###
-  dev:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    depends_on:
-       - "mysql"
-       - "influxdb"
-       - "mqtt-broker"
-       - "redis"
     volumes:
-      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
-    ports:
-      - "${HOST_HTTP_PORT}:80"
-      - "${HOST_HTTPS_PORT}:443"
-    networks:
-      - gonet
-
-  ### MySQL ###
-  mysql:
-    build:
-      context: ./docker/mysql
+      - ./:/go/src/go-boilerplate
+    labels:
+      - traefik.http.routers.auth-router.entrypoints=http
+      - traefik.http.routers.auth-router.rule=PathPrefix(`/api`)
+      - traefik.http.routers.auth-router.service=auth-service
+      - traefik.http.services.auth-service.loadbalancer.server.port=80
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - TZ=${TIMEZONE}
-    volumes:
-      - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
-      - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
-    ports:
-      - "${MYSQL_PORT}:3306"
+      GO_DEBUG: "true"
+      GO_SECRET_KEY: ${GO_SECRET_KEY}
+
+      # Redis 設定
+      GO_REDIS_HOST: ${GO_REDIS_HOST}
+      GO_REDIS_PASSWORD: ${GO_REDIS_PASSWORD}
+
+      # Postgres 設定
+      GO_POSTGRES_HOST: ${GO_POSTGRES_HOST}
+      GO_POSTGRES_PORT: ${GO_POSTGRES_PORT}
+      GO_POSTGRES_USER: ${GO_POSTGRES_USER}
+      GO_POSTGRES_PASSWORD: ${GO_POSTGRES_PASSWORD}
+      GO_POSTGRES_DB: ${GO_POSTGRES_DB}
+
+      # Mail 設定
+      GO_MAIL_FROM_NAME: ${GO_MAIL_FROM_NAME}
+      GO_MAIL_FROM_ADDRESS: ${GO_MAIL_FROM_ADDRESS}
+      GO_MAIL_SMTP_HOST: ${GO_MAIL_SMTP_HOST}
+      GO_MAIL_SMTP_PORT: ${GO_MAIL_SMTP_PORT}
+      GO_MAIL_SMTP_USERNAME: ${GO_MAIL_SMTP_USERNAME}
+      GO_MAIL_SMTP_PASSWORD: ${GO_MAIL_SMTP_PASSWORD}
     networks:
       - gonet
 
-  ### Redis ###
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      # SMTP server
+      - 1025:1025
+      # Web UI
+      - 8025:8025
+    networks:
+      - gonet
+
   redis:
-    build: ./docker/redis
-    volumes:
-      - ${DATA_PATH_HOST}/redis:/data
+    image: redis:7.0
+    restart: always
     ports:
-      - "${REDIS_PORT}:6379"
+      - '6379:6379'
+    command: redis-server --requirepass ${GO_REDIS_PASSWORD}
+    volumes:
+      - ../data/go-boilerplate/redis:/data
     networks:
-      - eznet
+      - gonet
 
-  ### InfluxDB ###
-  influxdb:
-    build:
-      context: ./docker/influxdb
+  postgres:
+    image: postgres:15.1
+    restart: always
+    ports:
+      - "5432:5432"
+    command: postgres -c log_statement=all
+    volumes:
+      - ../data/go-boilerplate/postgres:/var/lib/postgresql/data
     environment:
-      - INFLUXDB_DB=${INFLUXDB_DB}
-      - INFLUXDB_USER=${INFLUXDB_USER}
-      - INFLUXDB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
-      - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
-      - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
-    volumes:
-      - ${DATA_PATH_HOST}/influxdb:/var/lib/influxdb
-    ports:
-      - "${INFLUXDB_ADMIN_PORT}:8083"
-      - "${INFLUXDB_PORT}:8086"
-    networks:
-      - gonet
-
-  ### Telegraf ###
-  telegraf:
-    build:
-      context: ./docker/telegraf
-    networks:
-      - gonet
-
-  ### MQTT Broker ###
-  mqtt-broker:
-    build:
-      context: ./docker/mqtt-broker
-    ports:
-      - "${MQTT_BROKER_PORT}:8883"
+      POSTGRES_USER: ${GO_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${GO_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${GO_POSTGRES_DB}
     networks:
       - gonet

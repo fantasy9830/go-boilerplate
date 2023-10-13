@@ -3,91 +3,150 @@ package auth
 import (
 	"encoding/json"
 	"errors"
-	"go-boilerplate/pkg/config"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
-// Error constants
 var (
-	ErrTokenExpired = errors.New("Token has expired and can no longer be refreshed")
-	ErrTokenInvalid = errors.New("Token is invalid")
+	ErrTokenInvalid        = errors.New("token is invalid")
+	ErrRefreshTokenExpired = errors.New("token has expired and can no longer be refreshed")
 )
 
-// CreateToken Create JWT
-func CreateToken(id uint, secret string) (token string, expire time.Time, err error) {
-	expire = time.Now().Add(config.App.TTL * time.Second)
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
-		Id:        uuid.New().String(),
-		IssuedAt:  time.Now().Unix(),
-		Issuer:    config.Server.Host,
-		NotBefore: time.Now().Unix(),
-		Subject:   strconv.Itoa(int(id)),
-		ExpiresAt: expire.Unix(),
-	})
-
-	token, err = claims.SignedString([]byte(config.App.Key + secret))
-
-	return
+type Claims struct {
+	jwt.RegisteredClaims
 }
 
-// RefreshToken Refresh JWT
-func RefreshToken(tokenString string, secret string) (refreshToken string, err error) {
-	token, err := ParseToken(tokenString, secret)
+type JWTer interface {
+	CreateClaims(userID string, issuer string) Claims
+	CreateToken(claims Claims) (string, error)
+	ParseToken(token string) (*jwt.Token, error)
+	RefreshToken(token string) (string, error)
+	Decode(token string) (*Claims, error)
+	TTL() time.Duration
+	RefreshTTL() time.Duration
+}
 
-	var validationError *jwt.ValidationError
-	if errors.As(err, &validationError) && validationError.Errors == jwt.ValidationErrorExpired {
-		if payload, ok := token.Claims.(*jwt.StandardClaims); ok {
-			refreshTTL := time.Unix(payload.IssuedAt, 0).Add(config.App.RefreshTTL * time.Second).Unix()
-			if time.Now().Unix() > refreshTTL || payload.IssuedAt > time.Now().Unix() {
-				return "", ErrTokenExpired
-			}
+type JWT struct {
+	key        []byte
+	ttl        time.Duration
+	refreshTTL time.Duration
+}
 
-			expiresAt := time.Now().Add(config.App.TTL * time.Second).Unix()
-			if expiresAt > refreshTTL {
-				expiresAt = refreshTTL
-			}
+func WithTTL(duration time.Duration) func(*JWT) {
+	return func(j *JWT) {
+		j.ttl = duration
+	}
+}
 
-			claims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
-				Id:        uuid.New().String(),
-				IssuedAt:  payload.IssuedAt,
-				Issuer:    payload.Issuer,
-				NotBefore: time.Now().Unix(),
-				Subject:   payload.Subject,
-				ExpiresAt: expiresAt,
-			})
+func WithRefreshTTL(duration time.Duration) func(*JWT) {
+	return func(j *JWT) {
+		j.refreshTTL = duration
+	}
+}
 
-			refreshToken, err = claims.SignedString([]byte(config.App.Key + secret))
-		}
+func NewJWT(key string) JWTer {
+	return NewJWTWithOptions(key)
+}
+
+func NewJWTWithOptions(key string, opts ...func(*JWT)) JWTer {
+	j := &JWT{
+		key:        []byte(key),
+		ttl:        1 * time.Hour,
+		refreshTTL: 14 * 24 * time.Hour,
 	}
 
-	return
+	for _, f := range opts {
+		f(j)
+	}
+
+	return j
 }
 
-// ParseToken Parse JWT
-func ParseToken(tokenString string, secret string) (*jwt.Token, error) {
-	return jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(config.App.Key + secret), nil
+func (j *JWT) CreateClaims(userID string, issuer string) Claims {
+	now := time.Now()
+
+	return Claims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        uuid.New().String(),
+			IssuedAt:  jwt.NewNumericDate(now),
+			Issuer:    issuer,
+			NotBefore: jwt.NewNumericDate(now),
+			ExpiresAt: jwt.NewNumericDate(now.Add(j.ttl)),
+			Subject:   userID,
+		},
+	}
+}
+
+func (j *JWT) CreateToken(claims Claims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString(j.key)
+}
+
+func (j *JWT) ParseToken(token string) (*jwt.Token, error) {
+	return jwt.ParseWithClaims(token, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+		return j.key, nil
 	})
 }
 
-// Decode Decode
-func Decode(tokenString string) (claims *jwt.StandardClaims, err error) {
-	payload := strings.Split(tokenString, ".")
+func (j *JWT) RefreshToken(token string) (string, error) {
+	tok, err := j.ParseToken(token)
+	if err != nil {
+		return "", err
+	}
+
+	if payload, ok := tok.Claims.(*Claims); ok {
+		refreshExpiresAt := payload.IssuedAt.Add(j.refreshTTL)
+		if refreshExpiresAt.Before(time.Now()) || payload.IssuedAt.After(time.Now()) {
+			return "", ErrRefreshTokenExpired
+		}
+
+		expiresAt := time.Now().Add(j.refreshTTL)
+		if refreshExpiresAt.Before(expiresAt) {
+			expiresAt = refreshExpiresAt
+		}
+
+		return j.CreateToken(Claims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				ID:        uuid.New().String(),
+				IssuedAt:  payload.IssuedAt,
+				Issuer:    payload.Issuer,
+				NotBefore: jwt.NewNumericDate(time.Now()),
+				ExpiresAt: jwt.NewNumericDate(expiresAt),
+				Subject:   payload.Subject,
+			},
+		})
+	}
+
+	return "", ErrTokenInvalid
+}
+
+func (j *JWT) Decode(token string) (*Claims, error) {
+	payload := strings.Split(token, ".")
 	if len(payload) != 3 {
 		return nil, ErrTokenInvalid
 	}
 
-	bytes, err := jwt.DecodeSegment(payload[1])
+	decodeBytes, err := jwt.NewParser().DecodeSegment(payload[1])
 	if err != nil {
 		return nil, err
 	}
 
-	json.Unmarshal(bytes, &claims)
+	var claims Claims
+	if err := json.Unmarshal(decodeBytes, &claims); err != nil {
+		return nil, err
+	}
 
-	return
+	return &claims, nil
+}
+
+func (j *JWT) TTL() time.Duration {
+	return j.ttl
+}
+
+func (j *JWT) RefreshTTL() time.Duration {
+	return j.refreshTTL
 }
