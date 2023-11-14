@@ -65,17 +65,15 @@ func GetDB(c *Config) *gorm.DB {
 		return db.(*gorm.DB)
 	}
 
-	db, err := c.Connect()
+	conn, err := c.Connect()
 	if err != nil {
 		slog.Error("failed to connect to database", "err", err)
 		os.Exit(1)
 	}
 
-	connStore.Store(c, db)
-
-	if db, ok := connStore.Load(c); ok {
+	if db, ok := connStore.LoadOrStore(c, conn); ok {
 		return db.(*gorm.DB)
 	}
 
-	return db
+	return conn
 }
