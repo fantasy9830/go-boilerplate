@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-var connStore *sync.Map
+var connStore sync.Map
 
 type Config struct {
 	Driver      string

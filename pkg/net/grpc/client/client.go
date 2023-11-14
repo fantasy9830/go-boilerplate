@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var connMap sync.Map
+var connStore sync.Map
 
 // Dial creates a client connection to the given target.
 func Dial(target string) *grpc.ClientConn {
@@ -47,12 +47,12 @@ func Dial(target string) *grpc.ClientConn {
 
 // GetConn Initialized and exposed a singleton object of gRPC client.
 func GetConn(target string) *grpc.ClientConn {
-	if conn, ok := connMap.Load(target); ok {
+	if conn, ok := connStore.Load(target); ok {
 		return conn.(*grpc.ClientConn)
 	}
 
 	conn := Dial(target)
-	connMap.Store(target, conn)
+	connStore.Store(target, conn)
 
 	return conn
 }
