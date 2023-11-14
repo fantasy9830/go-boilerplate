@@ -19,6 +19,11 @@ docker exec -it auth bash
 ```
 
 ```bash
+cp .env.example .env
+```
+
+
+```bash
 go run cmd/auth/main.go
 ```
 
