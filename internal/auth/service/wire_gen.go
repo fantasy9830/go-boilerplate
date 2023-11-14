@@ -8,15 +8,15 @@ package service
 
 import (
 	"github.com/google/wire"
+	"go-boilerplate/internal/auth/email"
 	"go-boilerplate/internal/auth/entity"
 	"go-boilerplate/internal/auth/repository/postgres"
-	"go-boilerplate/pkg/net/email"
 )
 
 // Injectors from wire.go:
 
 func InitialUserService() entity.UserService {
-	emailer := email.New()
+	emailer := email.Get()
 	userRepository := postgres.InitialUserRepository()
 	entityUserService := NewUserService(emailer, userRepository)
 	return entityUserService
@@ -25,5 +25,5 @@ func InitialUserService() entity.UserService {
 // wire.go:
 
 var (
-	UserServiceSet = wire.NewSet(NewUserService, email.New, postgres.InitialUserRepository)
+	UserServiceSet = wire.NewSet(NewUserService, email.Get, postgres.InitialUserRepository)
 )

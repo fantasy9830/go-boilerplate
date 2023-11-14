@@ -1,9 +1,9 @@
 package main
 
 import (
+	"go-boilerplate/internal/auth/config"
 	"go-boilerplate/internal/auth/controller/http"
 	"go-boilerplate/internal/auth/migration"
-	"go-boilerplate/pkg/config"
 	"go-boilerplate/pkg/logger"
 	"go-boilerplate/pkg/version"
 	"log/slog"
@@ -129,7 +129,7 @@ func main() {
 			},
 		},
 		Before: func(ctx *cli.Context) error {
-			logger.SetupLogger()
+			logger.SetupLogger(config.App.Debug)
 			if err := migration.Init(ctx.Context); err != nil {
 				return err
 			}

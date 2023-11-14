@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"go-boilerplate/pkg/config"
 	"log/slog"
 	"sync"
 
@@ -19,16 +18,22 @@ var (
 	once sync.Once
 )
 
-func GetClient() (redis.UniversalClient, error) {
+type Config struct {
+	Type     string
+	Addrs    []string
+	Password string
+}
+
+func (c *Config) GetClient() (redis.UniversalClient, error) {
 	var err error
 
 	once.Do(func() {
 		opts := &redis.UniversalOptions{
-			Addrs:    []string{config.Redis.Host},
-			Password: config.Redis.Password,
+			Addrs:    c.Addrs,
+			Password: c.Password,
 		}
 
-		if config.Redis.Type == "cluster" {
+		if c.Type == "cluster" {
 			client = redis.NewClusterClient(opts.Cluster())
 		} else {
 			client = redis.NewClient(opts.Simple())

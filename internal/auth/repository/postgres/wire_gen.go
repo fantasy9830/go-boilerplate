@@ -8,25 +8,20 @@ package postgres
 
 import (
 	"github.com/google/wire"
+	"go-boilerplate/internal/auth/database"
 	"go-boilerplate/internal/auth/entity"
-	"go-boilerplate/pkg/database/orm"
 )
 
 // Injectors from wire.go:
 
 func InitialUserRepository() entity.UserRepository {
-	string2 := _wireStringValue
-	db := orm.GetDB(string2)
+	db := database.GetDB()
 	entityUserRepository := NewUserRepository(db)
 	return entityUserRepository
 }
 
-var (
-	_wireStringValue = "postgres"
-)
-
 // wire.go:
 
 var (
-	UserRepositorySet = wire.NewSet(NewUserRepository, orm.GetDB, wire.Value("postgres"))
+	UserRepositorySet = wire.NewSet(NewUserRepository, database.GetDB)
 )

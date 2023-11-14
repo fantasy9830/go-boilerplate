@@ -1,14 +1,13 @@
 package logger
 
 import (
-	"go-boilerplate/pkg/config"
 	"log/slog"
 	"os"
 )
 
-func SetupLogger() {
+func SetupLogger(debug bool) {
 	var levelVar slog.LevelVar
-	if config.App.Debug {
+	if debug {
 		levelVar.Set(slog.LevelDebug)
 	} else {
 		levelVar.Set(slog.LevelError)
@@ -19,7 +18,7 @@ func SetupLogger() {
 		Level:     &levelVar,
 	}
 
-	if config.App.Debug {
+	if debug {
 		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &opts)))
 	} else {
 		slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, &opts)))

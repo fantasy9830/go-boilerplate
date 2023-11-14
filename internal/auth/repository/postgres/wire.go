@@ -4,14 +4,14 @@
 package postgres
 
 import (
+	"go-boilerplate/internal/auth/database"
 	"go-boilerplate/internal/auth/entity"
-	"go-boilerplate/pkg/database/orm"
 
 	"github.com/google/wire"
 )
 
 var (
-	UserRepositorySet = wire.NewSet(NewUserRepository, orm.GetDB, wire.Value("postgres"))
+	UserRepositorySet = wire.NewSet(NewUserRepository, database.GetDB)
 )
 
 func InitialUserRepository() entity.UserRepository {

@@ -1,7 +1,7 @@
 package http
 
 import (
-	"go-boilerplate/pkg/config"
+	"go-boilerplate/internal/auth/config"
 	"go-boilerplate/pkg/middleware"
 	"go-boilerplate/pkg/net/http/server"
 	"go-boilerplate/pkg/version"

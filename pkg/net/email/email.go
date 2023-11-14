@@ -3,7 +3,6 @@ package email
 import (
 	"context"
 	"crypto/tls"
-	"go-boilerplate/pkg/config"
 	"log/slog"
 	"net/mail"
 
@@ -28,37 +27,33 @@ type Message struct {
 
 type Email struct {
 	dialer  *gomail.Dialer
-	from    mail.Address
+	config  Config
 	message Message
 }
 
-func New() Emailer {
-	return NewMail()
+type Config struct {
+	Host               string
+	Port               int
+	Username           string
+	Password           string
+	Address            mail.Address
+	InsecureSkipVerify bool
 }
 
-func NewMail(options ...Options) Emailer {
-	dialer := gomail.NewDialer(
-		config.Mail.SMTP.Host,
-		config.Mail.SMTP.Port,
-		config.Mail.SMTP.Username,
-		config.Mail.SMTP.Password,
-	)
+func NewMail(cfg Config) Emailer {
+	e := &Email{
+		config: cfg,
+		dialer: gomail.NewDialer(
+			cfg.Host,
+			cfg.Port,
+			cfg.Username,
+			cfg.Password,
+		),
+	}
 
 	// This is only needed when SSL/TLS certificate is not valid on server.
 	// In production this should be set to false.
-	dialer.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-
-	e := &Email{
-		dialer: dialer,
-		from: mail.Address{
-			Name:    config.Mail.From.Name,
-			Address: config.Mail.From.Address,
-		},
-	}
-
-	for _, f := range options {
-		f(e)
-	}
+	e.dialer.TLSConfig = &tls.Config{InsecureSkipVerify: cfg.InsecureSkipVerify}
 
 	return e
 }
@@ -102,7 +97,7 @@ func (e *Email) Send() error {
 	// defer m.Reset()
 
 	// From
-	m.SetHeader("From", e.from.String())
+	m.SetHeader("From", e.config.Address.String())
 
 	// To
 	m.SetHeader("To", e.message.to...)
