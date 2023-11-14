@@ -73,5 +73,9 @@ func GetDB(c *Config) *gorm.DB {
 
 	connStore.Store(c, db)
 
+	if db, ok := connStore.Load(c); ok {
+		return db.(*gorm.DB)
+	}
+
 	return db
 }
