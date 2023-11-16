@@ -48,11 +48,10 @@ func NewUserService(userRep entity.UserRepository, rdb redis.UniversalClient) *u
 	}
 }
 
-func (s *userService) Find(ctx context.Context, id string) (*entity.User, error) {
-	var user entity.User
+func (s *userService) Find(ctx context.Context, id string) (user entity.User, err error) {
 	key := fmt.Sprintf("auth:user:%s", id)
 	if err := s.rdb.Get(ctx, key).Scan(&user); err == nil {
-		return &user, nil
+		return user, nil
 	}
 
 	var g singleflight.Group
@@ -62,26 +61,26 @@ func (s *userService) Find(ctx context.Context, id string) (*entity.User, error)
 			g.Forget(id)
 		}()
 
-		user, err := s.userRep.FindFirst(ctx, "id", id)
+		u, err := s.userRep.FindFirst(ctx, "id", id)
 		if err != nil {
 			return nil, err
 		}
 
-		if err := s.rdb.Set(ctx, key, *user, 2*time.Hour).Err(); err != nil {
+		if err := s.rdb.Set(ctx, key, *u, 2*time.Hour).Err(); err != nil {
 			return nil, err
 		}
 
-		return user, nil
+		return *u, nil
 	})
 	if err != nil {
-		return nil, err
+		return user, err
 	}
 
-	if user, ok := value.(*entity.User); ok {
-		return user, nil
+	if u, ok := value.(entity.User); ok {
+		return u, nil
 	}
 
-	return nil, errors.New("record not found")
+	return user, errors.New("record not found")
 }
 
 func AuthRequired() gin.HandlerFunc {

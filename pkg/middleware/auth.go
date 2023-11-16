@@ -10,7 +10,7 @@ import (
 )
 
 type UserService[T any] interface {
-	Find(ctx context.Context, id string) (*T, error)
+	Find(ctx context.Context, id string) (T, error)
 }
 
 func AuthRequired[T any](jwt auth.JWTer, userSvc UserService[T]) gin.HandlerFunc {
