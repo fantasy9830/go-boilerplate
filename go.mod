@@ -1,25 +1,26 @@
 module go-boilerplate
 
-go 1.21.3
+go 1.21.4
 
 require (
 	github.com/fantasy9830/go-graceful v1.0.2
 	github.com/fantasy9830/go-retry v1.0.3
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/golang-jwt/jwt/v5 v5.0.0
-	github.com/google/uuid v1.3.0
+	github.com/golang-jwt/jwt/v5 v5.1.0
+	github.com/google/uuid v1.4.0
 	github.com/google/wire v0.5.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
-	github.com/redis/go-redis/v9 v9.2.1
-	github.com/stretchr/testify v1.8.3
+	github.com/redis/go-redis/v9 v9.3.0
+	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.25.7
-	golang.org/x/crypto v0.14.0
-	google.golang.org/grpc v1.58.3
+	golang.org/x/crypto v0.15.0
+	golang.org/x/sync v0.5.0
+	google.golang.org/grpc v1.59.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
-	gorm.io/driver/postgres v1.5.3
+	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
-	software.sslmate.com/src/go-pkcs12 v0.2.1
+	software.sslmate.com/src/go-pkcs12 v0.4.0
 )
 
 require (
@@ -54,10 +55,10 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98 // indirect
+	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

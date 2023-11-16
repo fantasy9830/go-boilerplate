@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -39,7 +41,9 @@ type Users []*User
 
 type UserService interface{}
 
-type UserRepository interface{}
+type UserRepository interface {
+	FindFirst(ctx context.Context, field string, value any) (*User, error)
+}
 
 func (u User) ValidatePassword(password string) bool {
 	if !u.Password.Empty() && len(password) > 0 {
@@ -95,4 +99,14 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	tx.Statement.SetColumn("Password", password)
 
 	return nil
+}
+
+// MarshalBinary MarshalBinary
+func (u User) MarshalBinary() (data []byte, err error) {
+	return json.Marshal(u)
+}
+
+// UnmarshalBinary UnmarshalBinary
+func (u *User) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, u)
 }
